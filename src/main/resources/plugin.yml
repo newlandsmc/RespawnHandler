@@ -1,0 +1,11 @@
+name: RespawnHandler
+main: me.goldencookie.RespawnHandler
+version: 1.0
+libraries:
+  - 'org.jetbrains.kotlin:kotlin-stdlib:1.6.0'
+api-version: 1.18
+
+commands:
+  spawnloot:
+    description: puts the loot of a dead person into a chest.
+    permission: respawnhandler.spawnloot
