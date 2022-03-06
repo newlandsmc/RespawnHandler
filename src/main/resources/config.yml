@@ -1,0 +1,20 @@
+corpse-limit: 3 # each player can only have 3 corpses at a time
+corpse-grace-period: 10 # in minutes, the amount of time the corpse is accessible to only the dead player
+corpse-decay-time: 2880 # in minutes
+
+# supports player placeholders for the clicker (playerName) etc.., (corpseName) for the name of the dead player
+# you can also use (graceTimeLeft|dd:HH:mm:ss) to display what time is left of the grace period
+# you can replace dd:HH:mm:ss with a different time format
+corpse-grace-message: "(corpseName)'s corpse is currently locked! It will be unlocked in (graceTimeLeft|dd:HH:mm:ss)"
+corpse-name: "&#c4462f(corpseName)'s corpse" # name in gui
+
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=  Items  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+round-up: true # true to round up, false to round down
+
+items:
+  GOLD_INGOT:
+    min: 50 # Percentage is in whole numbers, so 50 is 50% of items taken. In this case if you have 10 golden ingots, it'll take from 5 to 10 of them from you.
+    max: 100
+  IRON_ORE:
+    min: 50
+    max: 100
