@@ -4,10 +4,13 @@ import me.cookie.CorpseEntity
 import me.cookie.RespawnHandler
 import me.cookie.cookiecore.compressSimilarItems
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.properties.Delegates
@@ -20,25 +23,44 @@ class PlayerDeath(private val plugin: RespawnHandler): Listener {
     }
 
     @EventHandler fun onPlayerDeath(event: PlayerDeathEvent) {
+        println("Player died")
         val player = event.player
         // If death is to lava/void, kill player's items
         if (event.player.lastDamageCause?.cause == DamageCause.LAVA
             || event.player.lastDamageCause?.cause == DamageCause.VOID) return
+        println("not lava")
         // Check if the player's inventory is empty.
         if (player.inventory.contents == null) return
-        if (player.inventory.contents!!.isEmpty()) return
-        val clonedItems = player.inventory.contents ?: arrayOf()
 
-        var items = clonedItems.clone().toList().filterNotNull().filter { it.type != Material.AIR }
+        var items = player.inventory.contents!!.clone().toList().filterNotNull().filter { it.type != Material.AIR }
         if(items.isEmpty()) return
+        println("not empty")
+
         items = items.compressSimilarItems()
 
+        val soulboundedItems = mutableListOf<ItemStack>()
+
         items.forEach { item ->
+            println("item: $item")
+            if(item.itemMeta != null) {
+                val soulbounded = item.itemMeta.persistentDataContainer
+                    .has(NamespacedKey(plugin, "soulbounded"), PersistentDataType.BYTE)
+                if(soulbounded) {
+                    println("KEEPING ITEM")
+                    soulboundedItems.add(item)
+                    event.itemsToKeep.add(item)
+                    return@forEach
+                }
+                return@forEach
+            }
+
             val chance = plugin.itemChanceMap[item.type]
             if (chance != null) {
-                item.amount = round((chance.next().toDouble() / 100.0) * item.amount.toDouble())
+                item.amount = item.amount - round((chance.next().toDouble() / 100.0) * item.amount.toDouble())
             }
         }
+
+        items.removeAll(soulboundedItems)
 
         event.drops.clear()
         val corpse = CorpseEntity(player, items)

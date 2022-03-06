@@ -1,8 +1,11 @@
 package me.cookie
 
-import me.cookie.listeners.NPCHit
+import me.cookie.commands.SoulBound
+import me.cookie.commands.SoulsAdmin
+import me.cookie.cookiecore.data.sql.H2Storage
 import me.cookie.listeners.PlayerDeath
 import me.cookie.listeners.PlayerJoin
+import me.cookie.listeners.PlayerQuit
 import me.cookie.traits.CorpseTrait
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.trait.TraitInfo
@@ -12,18 +15,38 @@ import org.bukkit.plugin.java.JavaPlugin
 import java.util.logging.Level
 
 class RespawnHandler: JavaPlugin() {
+    // I know, I know
+    companion object {
+        lateinit var instance: RespawnHandler
+    }
+
+    lateinit var playerSouls: H2Storage
+
     val itemChanceMap = mutableMapOf<Material, Chance>()
     override fun onEnable() {
+        instance = this
+
+        playerSouls = H2Storage(this, "PlayerSouls").apply {
+            connect()
+            initTable("playerSouls", listOf("UUID varchar(255)", "SOULS int"))
+        }
 
         CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(CorpseTrait::class.java)
             .withName("CorpseTrait"))
 
-        getPluginManager().registerEvents(PlayerDeath(this), this)
-        getPluginManager().registerEvents(PlayerJoin(), this)
-        getPluginManager().registerEvents(NPCHit(), this)
+        val pluginManager = getPluginManager()
+
+        pluginManager.registerEvents(PlayerDeath(this), this)
+        pluginManager.registerEvents(PlayerJoin(), this)
+        pluginManager.registerEvents(PlayerQuit(), this)
+
+        getCommand("souls")!!.setExecutor(SoulsAdmin())
+        getCommand("soulbound")!!.setExecutor(SoulBound())
 
         saveDefaultConfig()
         loadChances()
+
+        Souls(this).startTask()
     }
 
     private fun loadChances(){

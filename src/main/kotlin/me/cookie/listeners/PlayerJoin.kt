@@ -1,5 +1,6 @@
 package me.cookie.listeners
 
+import me.cookie.loadSouls
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.trait.SkinTrait
 import org.bukkit.entity.EntityType
@@ -10,6 +11,8 @@ import org.spigotmc.event.player.PlayerSpawnLocationEvent
 
 class PlayerJoin : Listener {
     @EventHandler fun onPlayerJoin(event: PlayerSpawnLocationEvent){
+        event.player.loadSouls()
+
         // prevents issue where the skin is not loaded and the corpses are standing.
         // This basically allows for a smoother corpse experience.
         val npc = CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, "").apply {

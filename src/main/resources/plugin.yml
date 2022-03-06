@@ -9,3 +9,21 @@ depend:
   - CookieCore
 
 commands:
+  souls:
+    permission: 'respawnhandler.souls'
+    usage: '/souls'
+    description: 'Admin command to set the amount of souls a player has.'
+    aliases:
+      - soul
+      - souls
+  soulbound:
+    permission: 'respawnhandler.soulbound'
+    usage: '/soulbound'
+    description: 'Opens a soulbound GUI where a player can soulbind their items.'
+    aliases:
+      - soulbound
+      - soulbind
+      - soulbounditems
+      - soulbinditems
+      - soulbounditem
+      - soulbinditem
