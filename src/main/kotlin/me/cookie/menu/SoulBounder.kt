@@ -31,19 +31,24 @@ class SoulBounder(playerMenuUtility: PlayerMenuUtility) : Menu(playerMenuUtility
     override fun handleClick(e: InventoryClickEvent) {
         if(e.clickedInventory == null) return
         val clickedInventory = e.clickedInventory!!
+
         val currentItem = e.currentItem ?: return
+
         if(currentItem.type == Material.AIR) return
+
         if(currentItem.amount > 1) {
             e.isCancelled = true
             player.sendMessage("<gray>You can't soul bind more than one item at a time!".formatMinimessage())
             return
         }
+
         if(clickedInventory.type == InventoryType.PLAYER && inventory.getItem(13) != null) {
             e.isCancelled = true
             player.sendMessage("<gray>You can't soul bind more than one item at a time!".formatMinimessage())
             return
         }
-        if (e.slot != 13 && e.clickedInventory!!.type != InventoryType.PLAYER) {
+
+        if (e.slot != 13 && clickedInventory.type != InventoryType.PLAYER) {
             e.isCancelled = true
             val item = inventory.getItem(13) ?: return
             if(item.type == Material.AIR) return
@@ -89,6 +94,7 @@ class SoulBounder(playerMenuUtility: PlayerMenuUtility) : Menu(playerMenuUtility
 
             return
         }
+
         return
     }
 

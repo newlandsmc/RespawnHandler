@@ -56,10 +56,8 @@ class CorpseTrait: Trait("CorpseTrait") {
         val corpses = ownerUUID.cachedCorpses.toMutableList()
 
         if(corpses.size >= maxCorpses){
-            println(corpses[0])
             corpses[0].destroy()
             corpses.removeFirst()
-            println(corpses[0])
         }
 
         ownerUUID.cachedCorpses = corpses.apply {
@@ -82,7 +80,7 @@ class CorpseTrait: Trait("CorpseTrait") {
                 (npc.entity as Player).sleep(bedLoc.clone(), true)
                 PlayerAnimation.SLEEP.play(npc.entity as Player)
                 bedLoc.block.type = Material.AIR
-                graceTimer()
+                npcTimers()
             }
         }.runTaskLater(CitizensAPI.getPlugin(), 3)
     }
@@ -115,7 +113,7 @@ class CorpseTrait: Trait("CorpseTrait") {
         clicker.openMenu(CorpseInventory(clicker.playerMenuUtility, event.npc, deserializedItemstacks, nameFormat))
     }
 
-    fun graceTimer(){
+    fun npcTimers(){
         if(npc == null) return
 
         val graceEndsWhen = timeSpawned + gracePeriod
@@ -129,13 +127,16 @@ class CorpseTrait: Trait("CorpseTrait") {
             override fun run() {
                 if(npc == null) cancel()
 
-                if(graceEndsWhen <= System.currentTimeMillis()) {
+                if(time - System.currentTimeMillis() <= 0){
+                    println("Corpse is decaying")
                     if(!decaying){
+                        println("Grace period ended, starting decay timer")
                         time = decayWhen
                         prefix = "Decays in:"
                         decaying = true
                     }
-                    if(decayWhen <= System.currentTimeMillis()){
+                    if(decayWhen - System.currentTimeMillis() <= 0){
+                        println("Corpse has decayed")
                         ownerUUID.cachedCorpses = ownerUUID.cachedCorpses
                             .toMutableList()
                             .apply {

@@ -47,7 +47,6 @@ class CorpseEntity(
             getOrAddTrait(HologramTrait::class.java).apply {
                 setLine(0, "SUS!") // im sorry.
             }
-            println(CORPSE_DECAY_TIME * 60000)
             setAlwaysUseNameHologram(false)
             data().setPersistent(NPC.NAMEPLATE_VISIBLE_METADATA, "false") // hide default name
         }

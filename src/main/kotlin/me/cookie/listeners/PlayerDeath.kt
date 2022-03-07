@@ -1,6 +1,7 @@
 package me.cookie.listeners
 
 import me.cookie.CorpseEntity
+import me.cookie.ROUND
 import me.cookie.RespawnHandler
 import me.cookie.cookiecore.compressSimilarItems
 import org.bukkit.Material
@@ -23,30 +24,25 @@ class PlayerDeath(private val plugin: RespawnHandler): Listener {
     }
 
     @EventHandler fun onPlayerDeath(event: PlayerDeathEvent) {
-        println("Player died")
         val player = event.player
         // If death is to lava/void, kill player's items
         if (event.player.lastDamageCause?.cause == DamageCause.LAVA
             || event.player.lastDamageCause?.cause == DamageCause.VOID) return
-        println("not lava")
         // Check if the player's inventory is empty.
         if (player.inventory.contents == null) return
 
         var items = player.inventory.contents!!.clone().toList().filterNotNull().filter { it.type != Material.AIR }
-        if(items.isEmpty()) return
-        println("not empty")
+
 
         items = items.compressSimilarItems()
 
         val soulboundedItems = mutableListOf<ItemStack>()
 
         items.forEach { item ->
-            println("item: $item")
             if(item.itemMeta != null) {
                 val soulbounded = item.itemMeta.persistentDataContainer
                     .has(NamespacedKey(plugin, "soulbounded"), PersistentDataType.BYTE)
                 if(soulbounded) {
-                    println("KEEPING ITEM")
                     soulboundedItems.add(item)
                     event.itemsToKeep.add(item)
                     return@forEach
@@ -62,18 +58,19 @@ class PlayerDeath(private val plugin: RespawnHandler): Listener {
 
         items.removeAll(soulboundedItems)
 
+        // Don't spawn corpse if there's no items to place in it
+        if(items.isEmpty()) return
+
         event.drops.clear()
         val corpse = CorpseEntity(player, items)
         corpse.spawnCorpse(player.location)
     }
 
     private fun round(double: Double): Int {
-        return if(round) {
+        return if(ROUND) {
             ceil(double).toInt()
         } else {
             floor(double).toInt()
         }
     }
-
-    private val round = plugin.config.getBoolean("round-up")
 }
