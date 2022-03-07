@@ -23,7 +23,9 @@ class CorpseTrait: Trait("CorpseTrait") {
     @Persist("CorpseItems") var itemstacks = ""
     @Persist("CorpseTimeSpawn") var timeSpawned = System.currentTimeMillis()
     @Persist("CorpseSpawnedBefore") private var spawnedBefore = false
+    @Persist("Souls") var souls = 0
 
+    private var isOpened = false
     var maxCorpses = 10
     var nameFormat: String = "(corpseName)'s corpse"
     var gracePeriod: Long = 600000
@@ -56,7 +58,7 @@ class CorpseTrait: Trait("CorpseTrait") {
         val corpses = ownerUUID.cachedCorpses.toMutableList()
 
         if(corpses.size >= maxCorpses){
-            corpses[0].destroy()
+            corpses.first().destroy()
             corpses.removeFirst()
         }
 
@@ -87,6 +89,11 @@ class CorpseTrait: Trait("CorpseTrait") {
 
     @EventHandler fun onClick(event: NPCRightClickEvent){
         val clicker = event.clicker ?: return
+        if(isOpened) { // no duping (hee hee hee haw)
+            clicker.sendMessage("<red>This corpse is currently opened!".formatMinimessage())
+            return
+        }
+        isOpened = true
         if(timeSpawned + gracePeriod >= System.currentTimeMillis() && clicker.uniqueId != ownerUUID) {
             val matcher = timePatternRegex.matcher(corpseLockedMessage)
             var message = corpseLockedMessage

@@ -43,11 +43,13 @@ class CorpseEntity(
                 decayTime = CORPSE_DECAY_TIME * 60000
                 nameFormat = CORPSE_NAME
                 corpseLockedMessage = CORPSE_LOCKED_MESSAGE
+                souls = player.souls
             }
+
             getOrAddTrait(HologramTrait::class.java).apply {
-                setLine(0, "SUS!") // im sorry.
+                setLine(0, "loading...")
             }
-            setAlwaysUseNameHologram(false)
+            setAlwaysUseNameHologram(true)
             data().setPersistent(NPC.NAMEPLATE_VISIBLE_METADATA, "false") // hide default name
         }
     }
@@ -65,5 +67,6 @@ class CorpseEntity(
                 false
             )
         )
+        player.souls = 0
     }
 }

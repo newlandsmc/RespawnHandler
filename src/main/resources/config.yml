@@ -5,10 +5,10 @@ corpse-decay-time: 2880 # in minutes
 soulbound-cost: 100 # cost to soulbind an item
 
 # supports player placeholders for the clicker (playerName) etc.., (corpseName) for the name of the dead player
-# you can also use (graceTimeLeft|dd:HH:mm:ss) to display what time is left of the grace period
-# you can replace dd:HH:mm:ss with a different time format
-corpse-grace-message: "(corpseName)'s corpse is currently locked! It will be unlocked in (graceTimeLeft|dd:HH:mm:ss)"
-corpse-name: "&#c4462f(corpseName)'s corpse" # name in gui
+# you can also use (graceTimeLeft|HH:mm:ss) to display what time is left of the grace period
+# you can replace HH:mm:ss with a different time format
+corpse-grace-message: "(corpseName)'s corpse is currently locked! It will be unlocked in (graceTimeLeft|HH:mm:ss)"
+corpse-name: "<red>(corpseName)'s corpse" # name in gui
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=  Items  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 round-up: true # true to round up, false to round down

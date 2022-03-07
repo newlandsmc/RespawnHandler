@@ -28,6 +28,7 @@ class PlayerDeath(private val plugin: RespawnHandler): Listener {
         // If death is to lava/void, kill player's items
         if (event.player.lastDamageCause?.cause == DamageCause.LAVA
             || event.player.lastDamageCause?.cause == DamageCause.VOID) return
+        event.drops.clear()
         // Check if the player's inventory is empty.
         if (player.inventory.contents == null) return
 
@@ -61,7 +62,6 @@ class PlayerDeath(private val plugin: RespawnHandler): Listener {
         // Don't spawn corpse if there's no items to place in it
         if(items.isEmpty()) return
 
-        event.drops.clear()
         val corpse = CorpseEntity(player, items)
         corpse.spawnCorpse(player.location)
     }

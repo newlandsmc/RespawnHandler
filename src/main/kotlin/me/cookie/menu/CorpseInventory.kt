@@ -5,6 +5,7 @@ import me.cookie.cookiecore.PlayerMenuUtility
 import me.cookie.cookiecore.formatMinimessage
 import me.cookie.cookiecore.gui.Menu
 import me.cookie.cookiecore.gui.SlotsType
+import me.cookie.souls
 import me.cookie.traits.CorpseTrait
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
@@ -20,7 +21,10 @@ class CorpseInventory(
     private val itemstacks: List<ItemStack>,
     private val corpseNameFormat: String
     ): Menu(playerMenuUtility) {
+
     var corpseTrait: CorpseTrait = corpse.getOrAddTrait(CorpseTrait::class.java)
+
+    val player = playerMenuUtility.player
 
     override val menuName: Component
         get() = corpseNameFormat
@@ -32,11 +36,21 @@ class CorpseInventory(
     override val slots: SlotsType
         get() = SlotsType.CHEST_45
 
+    init {
+        player.souls += corpseTrait.souls
+        player.sendMessage(
+                "<dark_purple>Materialized ${corpseTrait.souls} souls from the corpse of ${corpseTrait.ownerName}!"
+                    .formatMinimessage()
+        )
+    }
+
     override fun handleClick(e: InventoryClickEvent) {
         return
     }
+
     override fun handleClose(e: InventoryCloseEvent) {
         if(e.reason == InventoryCloseEvent.Reason.OPEN_NEW) return
+        if(corpse.storedLocation == null) return
         val storedLoc = corpse.storedLocation.clone()
         e.inventory.contents?.forEach {
             if (it != null) {
