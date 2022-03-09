@@ -34,7 +34,6 @@ class PlayerDeath(private val plugin: RespawnHandler): Listener {
 
         var items = player.inventory.contents!!.clone().toList().filterNotNull().filter { it.type != Material.AIR }
 
-
         items = items.compressSimilarItems()
 
         val soulboundedItems = mutableListOf<ItemStack>()

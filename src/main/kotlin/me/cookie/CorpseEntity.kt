@@ -55,7 +55,11 @@ class CorpseEntity(
     }
 
     fun spawnCorpse(loc: Location){
-        npc.spawn(loc)
+        npc.spawn(
+            loc.apply {
+                pitch = 0f
+            }
+        )
         npc.entity.isCustomNameVisible = false
         (npc.entity as Player).addPotionEffect(
             PotionEffect(

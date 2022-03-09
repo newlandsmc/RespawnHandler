@@ -135,15 +135,12 @@ class CorpseTrait: Trait("CorpseTrait") {
                 if(npc == null) cancel()
 
                 if(time - System.currentTimeMillis() <= 0){
-                    println("Corpse is decaying")
                     if(!decaying){
-                        println("Grace period ended, starting decay timer")
                         time = decayWhen
                         prefix = "Decays in:"
                         decaying = true
                     }
                     if(decayWhen - System.currentTimeMillis() <= 0){
-                        println("Corpse has decayed")
                         ownerUUID.cachedCorpses = ownerUUID.cachedCorpses
                             .toMutableList()
                             .apply {

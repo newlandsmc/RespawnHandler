@@ -28,7 +28,7 @@ class RespawnHandler: JavaPlugin() {
 
         playerSouls = H2Storage(this, "PlayerSouls").apply {
             connect()
-            initTable("playerSouls", listOf("UUID varchar(255)", "SOULS int"))
+            initTable("player_souls", listOf("UUID varchar(255)", "SOULS int"))
         }
 
         CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(CorpseTrait::class.java)
