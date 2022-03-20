@@ -6,8 +6,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
 
 class PlayerQuit: Listener {
-    @EventHandler
-    fun onPlayerQuit(event: PlayerQuitEvent) {
+    @EventHandler fun onPlayerQuit(event: PlayerQuitEvent) {
         event.player.saveSouls()
     }
 }

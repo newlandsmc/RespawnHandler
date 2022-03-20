@@ -3,6 +3,7 @@ package me.cookie
 import me.cookie.commands.SoulBound
 import me.cookie.commands.SoulsAdmin
 import me.cookie.cookiecore.data.sql.H2Storage
+import me.cookie.listeners.CorpseHitBoxClick
 import me.cookie.listeners.PlayerDeath
 import me.cookie.listeners.PlayerJoin
 import me.cookie.listeners.PlayerQuit
@@ -39,6 +40,7 @@ class RespawnHandler: JavaPlugin() {
         pluginManager.registerEvents(PlayerDeath(this), this)
         pluginManager.registerEvents(PlayerJoin(), this)
         pluginManager.registerEvents(PlayerQuit(), this)
+        pluginManager.registerEvents(CorpseHitBoxClick(this), this)
 
         getCommand("souls")!!.setExecutor(SoulsAdmin())
         getCommand("soulbound")!!.setExecutor(SoulBound())
@@ -49,7 +51,7 @@ class RespawnHandler: JavaPlugin() {
         Souls(this).startTask()
     }
 
-    private fun loadChances(){
+    private fun loadChances() {
         val items = config.getConfigurationSection("items")!!.getKeys(false)
         items.forEach {
             val item = Material.valueOf(it)

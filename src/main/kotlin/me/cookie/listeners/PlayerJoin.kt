@@ -10,7 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable
 import org.spigotmc.event.player.PlayerSpawnLocationEvent
 
 class PlayerJoin : Listener {
-    @EventHandler fun onPlayerJoin(event: PlayerSpawnLocationEvent){
+    @EventHandler fun onPlayerJoin(event: PlayerSpawnLocationEvent) {
         event.player.loadSouls()
 
         // prevents issue where the skin is not loaded and the corpses are standing.

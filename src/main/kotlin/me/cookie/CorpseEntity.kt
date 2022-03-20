@@ -23,8 +23,8 @@ class CorpseEntity(
     private val items: List<ItemStack>,
     ) {
 
-    private var npc: NPC
-    private var inventory: Inventory
+    private val npc: NPC
+    private val inventory: Inventory
     init{
         npc = createNPC()
         inventory = createInventory(null, SlotsType.CHEST_45.size, player.name()
@@ -54,10 +54,11 @@ class CorpseEntity(
         }
     }
 
-    fun spawnCorpse(loc: Location){
+    fun spawnCorpse(loc: Location): NPC{
         npc.spawn(
             loc.apply {
                 pitch = 0f
+                yaw = -yaw - 90f
             }
         )
         npc.entity.isCustomNameVisible = false
@@ -72,5 +73,7 @@ class CorpseEntity(
             )
         )
         player.souls = 0
+
+        return npc
     }
 }

@@ -57,14 +57,14 @@ class CorpseInventory(
                 storedLoc.world.dropItem(storedLoc, it)
             }
         }
-        object: BukkitRunnable(){
+        object: BukkitRunnable() {
             override fun run() {
                 corpseTrait.ownerUUID.cachedCorpses = corpseTrait.ownerUUID.cachedCorpses
                     .toMutableList()
                     .apply {
                         remove(corpse)
                     }
-                corpse.destroy()
+                corpse.getOrAddTrait(CorpseTrait::class.java).destroyCorpse()
             }
         }.runTaskLater(CitizensAPI.getPlugin(), 2)
     }

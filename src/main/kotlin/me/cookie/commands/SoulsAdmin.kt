@@ -11,17 +11,17 @@ import org.bukkit.entity.Player
 
 class SoulsAdmin: CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        if(!sender.hasPermission("respawnhandler.admin")){
+        if(!sender.hasPermission("respawnhandler.admin")) {
             sender.sendMessage(NO_PERMISSION)
             return true
         }
-        if(args.isEmpty()){
+        if(args.isEmpty()) {
             sender.sendMessage("<red>Usage: /souls \\<set | number | name>".formatMinimessage())
             return true
         }
-        when(args[0]){
+        when(args[0]) {
             "set" -> {
-                if(args.size < 3){
+                if(args.size < 3) {
                     sender.sendMessage("<red>Usage: /souls set <player> <souls>".formatMinimessage())
                     return true
                 }
@@ -41,12 +41,12 @@ class SoulsAdmin: CommandExecutor {
 
             }
             else -> {
-                if(sender !is Player){
+                if(sender !is Player) {
                     sender.sendMessage("<red>You must be a player to use this command!".formatMinimessage())
                     return true
                 }
                 val player = Bukkit.getPlayer(args[0])
-                if(player != null){
+                if(player != null) {
                    sender.sendMessage("<green>${player.name}'s souls: ${player.souls}".formatMinimessage())
                     return true
                 }

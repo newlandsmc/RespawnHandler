@@ -9,7 +9,7 @@ class Souls(private val plugin: RespawnHandler) {
     init {
         pluginInstance = plugin
     }
-    fun startTask(){
+    fun startTask() {
         object: BukkitRunnable() {
             override fun run() {
                 pluginInstance.server.onlinePlayers.forEach {

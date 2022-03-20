@@ -1,6 +1,8 @@
 package me.cookie.traits
 
+import me.cookie.RespawnHandler
 import me.cookie.cachedCorpses
+import me.cookie.closestNumberToDivisibleBy
 import me.cookie.cookiecore.*
 import me.cookie.menu.CorpseInventory
 import net.citizensnpcs.api.CitizensAPI
@@ -9,38 +11,48 @@ import net.citizensnpcs.api.persistence.Persist
 import net.citizensnpcs.api.trait.Trait
 import net.citizensnpcs.trait.HologramTrait
 import net.citizensnpcs.util.PlayerAnimation
-import org.bukkit.Material
+import org.bukkit.Location
+import org.bukkit.NamespacedKey
+import org.bukkit.entity.Entity
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.bukkit.entity.Turtle
 import org.bukkit.event.EventHandler
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.*
 import java.util.regex.Pattern
 
 class CorpseTrait: Trait("CorpseTrait") {
+    var plugin: RespawnHandler = RespawnHandler.instance
+
     @Persist("CorpseOwnerName") var ownerName: String = ""
     @Persist("CorpseOwnerUUID") var ownerUUID: UUID = UUID.randomUUID()
     @Persist("CorpseItems") var itemstacks = ""
     @Persist("CorpseTimeSpawn") var timeSpawned = System.currentTimeMillis()
     @Persist("CorpseSpawnedBefore") private var spawnedBefore = false
     @Persist("Souls") var souls = 0
+    @Persist("CorpseDecayTime") var decayTime: Long = 172800000
+    @Persist("CorpseGraceTime") var gracePeriod: Long = 600000
 
+    private val hitBoxes = mutableListOf<Entity>()
     private var isOpened = false
     var maxCorpses = 10
     var nameFormat: String = "(corpseName)'s corpse"
-    var gracePeriod: Long = 600000
+
     var corpseLockedMessage: String =
         "(corpseName)'s corpse is currently locked! It will be unlocked in (graceTimeLeft|dd:HH:mm:ss)"
 
     lateinit var nameplate: HologramTrait
 
-    var decayTime: Long = 172800000
-
     private val timePatternRegex: Pattern = Pattern.compile("\\((graceTimeLeft)\\|(.+)\\)")
     private var deserializedItemstacks = listOf<ItemStack>()
 
     override fun onSpawn() {
-        if(spawnedBefore){
+        if(spawnedBefore) {
             // Needs a bit more of a delay for the skin loading. Skins are uncached on server restart
             object: BukkitRunnable() {
                 override fun run() {
@@ -57,8 +69,8 @@ class CorpseTrait: Trait("CorpseTrait") {
         // Destroy if there are more than limited corpses, also functions as a spawn limit :yay:
         val corpses = ownerUUID.cachedCorpses.toMutableList()
 
-        if(corpses.size >= maxCorpses){
-            corpses.first().destroy()
+        if(corpses.size >= maxCorpses) {
+            corpses.first().getOrAddTrait(CorpseTrait::class.java).destroyCorpse()
             corpses.removeFirst()
         }
 
@@ -69,38 +81,28 @@ class CorpseTrait: Trait("CorpseTrait") {
         nameplate = npc.getOrAddTrait(HologramTrait::class.java)
     }
 
-    fun spawnSleeping(){
-        // Spawn a fake bed due to minecraft needing a bed to run the sleep animation, shortly removed afterwards
-        val bedLoc = npc.storedLocation.clone().apply {
-            // Blocks can't be placed at y 1000 anyway so no need to worry
-            y = 1000.0
-        }
-        bedLoc.block.type = Material.BLACK_BED
+    fun spawnSleeping() {
+        (npc.entity as Player).sleep(npc.storedLocation.clone(), true)
+        PlayerAnimation.SLEEP.play(npc.entity as Player)
 
-        object: BukkitRunnable() {
-            override fun run() {
-                (npc.entity as Player).sleep(bedLoc.clone(), true)
-                PlayerAnimation.SLEEP.play(npc.entity as Player)
-                bedLoc.block.type = Material.AIR
-                npcTimers()
-            }
-        }.runTaskLater(CitizensAPI.getPlugin(), 3)
+        npcTimers()
+        spawnHitBoxes()
     }
 
-    @EventHandler fun onClick(event: NPCRightClickEvent){
+    @EventHandler fun onClick(event: NPCRightClickEvent) {
         val clicker = event.clicker ?: return
-        if(isOpened) { // no duping (hee hee hee haw)
-            clicker.sendMessage("<red>This corpse is currently opened!".formatMinimessage())
+        val trait = event.npc.getOrAddTrait(CorpseTrait::class.java)
+        if(trait.isOpened) { // no duping (hee hee hee haw)
             return
         }
-        isOpened = true
+        trait.isOpened = true
         if(timeSpawned + gracePeriod >= System.currentTimeMillis() && clicker.uniqueId != ownerUUID) {
             val matcher = timePatternRegex.matcher(corpseLockedMessage)
             var message = corpseLockedMessage
-            if(matcher.find()){
-                if(message.contains("graceTimeLeft")){
+            if(matcher.find()) {
+                if(message.contains("graceTimeLeft")) {
                     val matchedGroup2 = matcher.group(2)
-                    if(matchedGroup2 != null){
+                    if(matchedGroup2 != null) {
                         message = message
                             .replace(
                                 Regex(timePatternRegex.pattern()),
@@ -120,7 +122,77 @@ class CorpseTrait: Trait("CorpseTrait") {
         clicker.openMenu(CorpseInventory(clicker.playerMenuUtility, event.npc, deserializedItemstacks, nameFormat))
     }
 
-    fun npcTimers(){
+    private fun spawnHitBoxes() {
+        val location = npc.storedLocation.clone().apply {
+            yaw = closestNumberToDivisibleBy(90f + -yaw, 45)
+        }
+
+        val clickLoc1 = location
+        val clickLoc2 = location
+
+        fun spawnHitBox(location: Location) { // We do a little brain damage
+            hitBoxes.add(location.world.spawnEntity(
+                location,
+                EntityType.TURTLE
+            ).apply {
+                (this as Turtle)
+                isInvulnerable = true
+                isSilent = true
+                setGravity(false)
+                setAI(false)
+                addPotionEffect(
+                    PotionEffect(
+                        PotionEffectType.INVISIBILITY,
+                        Integer.MAX_VALUE,
+                        0,
+                        false,
+                        false
+                    )
+                )
+                persistentDataContainer.set(
+                    NamespacedKey(plugin, "corpse_Id"),
+                    PersistentDataType.INTEGER,
+                    npc.id
+                )
+            })
+        }
+
+        spawnHitBox(clickLoc1)
+        spawnHitBox(clickLoc2)
+
+        syncHitBoxes()
+    }
+
+    fun syncHitBoxes() {
+        val storedLoc = npc.storedLocation.clone().apply {
+            yaw = closestNumberToDivisibleBy(90f + -yaw, 45)
+            y -= 0.2
+        }
+
+        hitBoxes[0].teleport(storedLoc
+            .apply {
+                add(
+                    direction.apply {
+                        x *= 0.5
+                        z *= 0.5
+                    }
+                )
+            }
+        )
+
+        hitBoxes[1].teleport(storedLoc
+            .apply {
+                add(
+                    direction.apply {
+                        x *= 0.9
+                        z *= 0.9
+                    }
+                )
+            }
+        )
+    }
+
+    private fun npcTimers() {
         if(npc == null) return
 
         val graceEndsWhen = timeSpawned + gracePeriod
@@ -131,22 +203,33 @@ class CorpseTrait: Trait("CorpseTrait") {
         var decaying = false
 
         object: BukkitRunnable() {
+            var lastPos = npc.storedLocation.clone()
             override fun run() {
-                if(npc == null) cancel()
+                if(npc == null || npc.entity == null) {
+                    cancel()
+                    return
+                }
 
-                if(time - System.currentTimeMillis() <= 0){
-                    if(!decaying){
+                // HitBox Sync
+                if(lastPos != npc.storedLocation) {
+                    syncHitBoxes()
+                    lastPos = npc.storedLocation.clone()
+                }
+
+                // Corpse Decaying
+                if(time - System.currentTimeMillis() <= 0) {
+                    if(!decaying) {
                         time = decayWhen
                         prefix = "Decays in:"
                         decaying = true
                     }
-                    if(decayWhen - System.currentTimeMillis() <= 0){
+                    if(decayWhen - System.currentTimeMillis() <= 0) {
                         ownerUUID.cachedCorpses = ownerUUID.cachedCorpses
                             .toMutableList()
                             .apply {
                                 remove(npc)
                             }
-                        npc.destroy()
+                        npc.getOrAddTrait(CorpseTrait::class.java).destroyCorpse()
                         cancel()
                     }
                     return
@@ -159,5 +242,19 @@ class CorpseTrait: Trait("CorpseTrait") {
                 )
             }
         }.runTaskTimer(CitizensAPI.getPlugin(), 20, 20)
+    }
+
+    private fun destroyHitBoxes() {
+        hitBoxes.forEach { it.remove()}
+        hitBoxes.clear()
+    }
+
+    override fun onDespawn() {
+        destroyHitBoxes()
+    }
+
+    fun destroyCorpse() {
+        destroyHitBoxes()
+        npc.destroy()
     }
 }
