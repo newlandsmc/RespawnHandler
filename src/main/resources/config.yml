@@ -8,6 +8,8 @@ soulbound-cost: 100 # cost to soulbind an item
 # you can also use (graceTimeLeft|HH:mm:ss) to display what time is left of the grace period
 # you can replace HH:mm:ss with a different time format
 corpse-grace-message: "(corpseName)'s corpse is currently locked! It will be unlocked in (graceTimeLeft|HH:mm:ss)"
+corpse-pickupsouls-message: "<green>Found (corpseSouls) souls on (corpseName)'s corpse."
+corpse-nosouls-message: "<red>No souls were found on this corpse."
 corpse-name: "<red>(corpseName)'s corpse" # name in gui
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=  Items  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#

@@ -2,6 +2,7 @@ package me.cookie
 
 import me.cookie.cookiecore.gui.SlotsType
 import me.cookie.cookiecore.serialize
+import me.cookie.data.*
 import me.cookie.traits.CorpseTrait
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
