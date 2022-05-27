@@ -42,7 +42,7 @@ class RespawnHandler: JavaPlugin() {
         pluginManager.registerEvents(PlayerQuit(), this)
         pluginManager.registerEvents(CorpseHitBoxClick(this), this)
 
-        getCommand("souls")!!.setExecutor(SoulsAdmin())
+        getCommand("soulsadmin")!!.setExecutor(SoulsAdmin())
         getCommand("soulbound")!!.setExecutor(SoulBound())
 
         saveDefaultConfig()

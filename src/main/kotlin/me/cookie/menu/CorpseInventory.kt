@@ -1,5 +1,7 @@
 package me.cookie.menu
 
+import me.cookie.data.CORPSE_PICKEDUP_NOSOULS
+import me.cookie.data.CORPSE_PICKEDUP_SOULS
 import me.cookie.cachedCorpses
 import me.cookie.cookiecore.PlayerMenuUtility
 import me.cookie.cookiecore.formatMinimessage
@@ -20,7 +22,7 @@ class CorpseInventory(
     private val corpse: NPC,
     private val itemstacks: List<ItemStack>,
     private val corpseNameFormat: String
-    ): Menu(playerMenuUtility) {
+): Menu(playerMenuUtility) {
 
     var corpseTrait: CorpseTrait = corpse.getOrAddTrait(CorpseTrait::class.java)
 
@@ -38,10 +40,32 @@ class CorpseInventory(
 
     init {
         player.souls += corpseTrait.souls
-        player.sendMessage(
-                "<dark_purple>Materialized ${corpseTrait.souls} souls from the corpse of ${corpseTrait.ownerName}!"
+        if(corpseTrait.souls == 0){
+            player.sendMessage(
+                CORPSE_PICKEDUP_NOSOULS.replace(
+                    "(corpseName)",
+                    corpseTrait.ownerName
+                )
+                    .replace(
+                        "(corpseSouls)",
+                        corpseTrait.souls.toString()
+                    )
                     .formatMinimessage()
-        )
+            )
+        }else{
+            player.sendMessage(
+                CORPSE_PICKEDUP_SOULS.replace(
+                    "(corpseName)",
+                    corpseTrait.ownerName
+                )
+                    .replace(
+                        "(corpseSouls)",
+                        corpseTrait.souls.toString()
+                    )
+                    .formatMinimessage()
+            )
+        }
+
     }
 
     override fun handleClick(e: InventoryClickEvent) {

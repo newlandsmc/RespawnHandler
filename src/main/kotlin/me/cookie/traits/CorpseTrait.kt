@@ -93,7 +93,6 @@ class CorpseTrait: Trait("CorpseTrait") {
         if(trait.isOpened) { // no duping (hee hee hee haw)
             return
         }
-        trait.isOpened = true
         if(timeSpawned + gracePeriod >= System.currentTimeMillis() && clicker.uniqueId != ownerUUID) {
             val matcher = timePatternRegex.matcher(corpseLockedMessage)
             var message = corpseLockedMessage
@@ -116,8 +115,8 @@ class CorpseTrait: Trait("CorpseTrait") {
             clicker.sendMessage(message.formatMinimessage())
             return
         }
-
         clicker.openMenu(CorpseInventory(clicker.playerMenuUtility, event.npc, deserializedItemstacks, nameFormat))
+        trait.isOpened = true
     }
 
     private fun spawnHitBoxes() {
@@ -197,7 +196,7 @@ class CorpseTrait: Trait("CorpseTrait") {
         val decayWhen = timeSpawned + decayTime + gracePeriod
 
         var time = graceEndsWhen
-        var prefix = "Unlocks in:"
+        var prefix = "&#fff000Unlocks in:"
         var decaying = false
 
         object: BukkitRunnable() {
@@ -218,7 +217,7 @@ class CorpseTrait: Trait("CorpseTrait") {
                 if(time - System.currentTimeMillis() <= 0) {
                     if(!decaying) {
                         time = decayWhen
-                        prefix = "Decays in:"
+                        prefix = "&#d5d5d5Decays in:"
                         decaying = true
                     }
                     if(decayWhen - System.currentTimeMillis() <= 0) {
@@ -236,7 +235,7 @@ class CorpseTrait: Trait("CorpseTrait") {
                 nameplate.lineHeight = 1.0
                 nameplate.setLine(
                     0,
-                    "&#FF2D00$prefix ${(time - System.currentTimeMillis()).formatMillis("HH:mm:ss")}"
+                    "$prefix ${(time - System.currentTimeMillis()).formatMillis("HH:mm:ss")}"
                 )
             }
         }.runTaskTimer(CitizensAPI.getPlugin(), 20, 20)

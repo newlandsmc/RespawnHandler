@@ -1,7 +1,7 @@
 package me.cookie.listeners
 
 import me.cookie.CorpseEntity
-import me.cookie.ROUND
+import me.cookie.data.ROUND
 import me.cookie.RespawnHandler
 import me.cookie.cookiecore.compressSimilarItems
 import org.bukkit.Material
@@ -25,10 +25,8 @@ class PlayerDeath(private val plugin: RespawnHandler): Listener {
 
     @EventHandler fun onPlayerDeath(event: PlayerDeathEvent) {
         val player = event.player
-        // If death is to lava/void, kill player's items
-        if (event.player.lastDamageCause?.cause == DamageCause.LAVA
-            || event.player.lastDamageCause?.cause == DamageCause.VOID) return
         event.drops.clear()
+
         // Check if the player's inventory is empty.
         if (player.inventory.contents == null) return
 
@@ -60,6 +58,9 @@ class PlayerDeath(private val plugin: RespawnHandler): Listener {
 
         // Don't spawn corpse if there's no items to place in it
         if(items.isEmpty()) return
+        // If death is to lava/void, kill player's items (non soulbound)
+        if (event.player.lastDamageCause?.cause == DamageCause.LAVA
+            || event.player.lastDamageCause?.cause == DamageCause.VOID) return
 
         val corpse = CorpseEntity(player, items)
         corpse.spawnCorpse(player.location)

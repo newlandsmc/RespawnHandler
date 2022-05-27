@@ -32,6 +32,6 @@ tasks{
         archiveClassifier.set("")
         project.configurations.implementation.get().isCanBeResolved = true
         configurations = listOf(project.configurations.implementation.get())
-        destinationDirectory.set(file("G:\\coding\\Test Servers\\TimeRewards\\plugins"))
+        //destinationDirectory.set(file("G:\\coding\\Test Servers\\TimeRewards\\plugins"))
     }
 }

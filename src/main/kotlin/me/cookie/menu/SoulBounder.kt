@@ -1,12 +1,12 @@
 package me.cookie.menu
 
 import me.cookie.RespawnHandler
-import me.cookie.SOULBOUND_COST
 import me.cookie.cookiecore.ItemStackBuilder
 import me.cookie.cookiecore.PlayerMenuUtility
 import me.cookie.cookiecore.formatMinimessage
 import me.cookie.cookiecore.gui.Menu
 import me.cookie.cookiecore.gui.SlotsType
+import me.cookie.data.SOULBOUND_COST
 import me.cookie.souls
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -63,20 +63,15 @@ class SoulBounder(playerMenuUtility: PlayerMenuUtility) : Menu(playerMenuUtility
             }
 
             val meta = item.itemMeta
-
+            val lore: MutableList<Component> = mutableListOf()
             if(meta.hasLore()) {
-                val lore = meta.lore()
-                lore!!.add("<gray>[Soulbounded]".formatMinimessage()
-                    .decoration(TextDecoration.ITALIC, false)
-                )
-                meta.lore(lore)
-            } else {
-                val lore = mutableListOf<Component>()
-                lore.add("<gray>[Soulbounded]".formatMinimessage()
-                    .decoration(TextDecoration.ITALIC, false)
-                )
-                meta.lore(lore)
+                lore.addAll(meta.lore()!!)
             }
+
+            lore.add("<dark_gray>SOULBOUND".formatMinimessage()
+                .decoration(TextDecoration.ITALIC, false)
+            )
+            meta.lore(lore)
 
             player.souls -= SOULBOUND_COST
 
