@@ -1,5 +1,6 @@
 package me.cookie
 
+import me.cookie.cookiecore.formatMinimessage
 import me.cookie.cookiecore.gui.SlotsType
 import me.cookie.cookiecore.serialize
 import me.cookie.traits.CorpseTrait
@@ -7,8 +8,6 @@ import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.trait.HologramTrait
 import net.citizensnpcs.trait.SkinTrait
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit.createInventory
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
@@ -27,8 +26,11 @@ class CorpseEntity(
     private val inventory: Inventory
     init{
         npc = createNPC()
-        inventory = createInventory(null, SlotsType.CHEST_45.size, player.name()
-            .append(Component.text("'s corpse").color(NamedTextColor.RED)))
+        inventory = createInventory(
+            null,
+            SlotsType.CHEST_45.size,
+            player.name.plus("'s Corpse").formatMinimessage()
+        )
     }
     private fun createNPC(): NPC {
         return CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, "").apply {

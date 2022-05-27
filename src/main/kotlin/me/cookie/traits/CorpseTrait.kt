@@ -20,8 +20,6 @@ import org.bukkit.entity.Turtle
 import org.bukkit.event.EventHandler
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.potion.PotionEffect
-import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.*
 import java.util.regex.Pattern
@@ -140,7 +138,7 @@ class CorpseTrait: Trait("CorpseTrait") {
                 isSilent = true
                 setGravity(false)
                 setAI(false)
-                addPotionEffect(
+                /*addPotionEffect(
                     PotionEffect(
                         PotionEffectType.INVISIBILITY,
                         Integer.MAX_VALUE,
@@ -148,7 +146,7 @@ class CorpseTrait: Trait("CorpseTrait") {
                         false,
                         false
                     )
-                )
+                )*/
                 persistentDataContainer.set(
                     NamespacedKey(plugin, "corpse_Id"),
                     PersistentDataType.INTEGER,
