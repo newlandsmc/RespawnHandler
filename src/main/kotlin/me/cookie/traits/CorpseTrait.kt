@@ -198,7 +198,7 @@ class CorpseTrait: Trait("CorpseTrait") {
         val decayWhen = timeSpawned + decayTime + gracePeriod
 
         var time = graceEndsWhen
-        var prefix = "&#fff000Unlocks in:"
+        var prefix = "&#fff000Public in:"
         var decaying = false
 
         object: BukkitRunnable() {
