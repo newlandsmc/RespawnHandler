@@ -92,6 +92,22 @@ class CorpseTrait: Trait("CorpseTrait") {
     @EventHandler fun onClick(event: NPCRightClickEvent) {
         val clicker = event.clicker ?: return
         val trait = event.npc.getOrAddTrait(CorpseTrait::class.java)
+        if(clicker.name.contains("*")){
+            // Just drop items if its a bedrock player
+            deserializedItemstacks.forEach {
+                npc.storedLocation.world.dropItem(npc.storedLocation, it)
+            }
+            object: BukkitRunnable() {
+                override fun run() {
+                    ownerUUID.cachedCorpses = ownerUUID.cachedCorpses
+                        .toMutableList()
+                        .apply {
+                            remove(npc)
+                        }
+                    destroyCorpse()
+                }
+            }.runTaskLater(CitizensAPI.getPlugin(), 2)
+        }
         if(trait.isOpened) { // no duping (hee hee hee haw)
             return
         }

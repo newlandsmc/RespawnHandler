@@ -1,9 +1,9 @@
 package me.cookie.listeners
 
 import me.cookie.CorpseEntity
-import me.cookie.data.ROUND
 import me.cookie.RespawnHandler
 import me.cookie.cookiecore.compressSimilarItems
+import me.cookie.data.ROUND
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.event.EventHandler
@@ -26,9 +26,12 @@ class PlayerDeath(private val plugin: RespawnHandler): Listener {
     @EventHandler fun onPlayerDeath(event: PlayerDeathEvent) {
         val player = event.player
         event.drops.clear()
-
+        plugin.logger.warning("Captured death for ${player.name}, at ${player.location.x}x ${player.location.y}y ${player.location.z}z")
         // Check if the player's inventory is empty.
-        if (player.inventory.contents == null) return
+        if (player.inventory.contents == null) {
+            plugin.logger.warning("Inventory is null, not spawning corpse")
+            return
+        }
 
         var items = player.inventory.contents!!.clone().toList().filterNotNull().filter { it.type != Material.AIR }
 
@@ -57,11 +60,22 @@ class PlayerDeath(private val plugin: RespawnHandler): Listener {
         items.removeAll(soulboundedItems)
 
         // Don't spawn corpse if there's no items to place in it
-        if(items.isEmpty()) return
+        if(items.isEmpty()) {
+            plugin.logger.warning("no items to put in corpse, not spawning corpse")
+            return
+        }
         // If death is to lava/void, kill player's items (non soulbound)
+        if(event.player.lastDamageCause == null){
+            plugin.logger.warning("last damage cause was null, returning")
+            return
+        }
         if (event.player.lastDamageCause?.cause == DamageCause.LAVA
-            || event.player.lastDamageCause?.cause == DamageCause.VOID) return
+            || event.player.lastDamageCause?.cause == DamageCause.VOID) {
+            plugin.logger.warning("Damage cause is lava or void, not spawning corpse.")
+            return
+        }
 
+        plugin.logger.warning("successfully spawned corpse for ${player.name}")
         val corpse = CorpseEntity(player, items)
         corpse.spawnCorpse(player.location)
     }
