@@ -3,8 +3,10 @@ package me.cookie.traits
 import me.cookie.RespawnHandler
 import me.cookie.cachedCorpses
 import me.cookie.closestNumberToDivisibleBy
-import me.cookie.cookiecore.*
-import me.cookie.menu.CorpseInventory
+import me.cookie.cookiecore.deseralizeItemStacks
+import me.cookie.cookiecore.formatMillis
+import me.cookie.cookiecore.formatMinimessage
+import me.cookie.cookiecore.formatPlayerPlaceholders
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.citizensnpcs.api.persistence.Persist
@@ -37,9 +39,10 @@ class CorpseTrait: Trait("CorpseTrait") {
     @Persist("Souls") var souls = 0
     @Persist("CorpseDecayTime") var decayTime: Long = 172800000
     @Persist("CorpseGraceTime") var gracePeriod: Long = 600000
+    @Persist("LastClicked") var lastClicked: Long = System.currentTimeMillis()
 
     private val hitBoxes = mutableListOf<Entity>()
-    private var isOpened = false
+    /*private var isOpened = false*/
     var maxCorpses = 10
     var nameFormat: String = "(corpseName)'s corpse"
 
@@ -91,27 +94,14 @@ class CorpseTrait: Trait("CorpseTrait") {
 
     @EventHandler fun onClick(event: NPCRightClickEvent) {
         val clicker = event.clicker ?: return
-        val trait = event.npc.getOrAddTrait(CorpseTrait::class.java)
-        if(clicker.name.contains("*")){
-            // Just drop items if its a bedrock player
-            deserializedItemstacks.forEach {
-                npc.storedLocation.world.dropItem(npc.storedLocation, it)
-            }
-            object: BukkitRunnable() {
-                override fun run() {
-                    ownerUUID.cachedCorpses = ownerUUID.cachedCorpses
-                        .toMutableList()
-                        .apply {
-                            remove(npc)
-                        }
-                    destroyCorpse()
-                }
-            }.runTaskLater(CitizensAPI.getPlugin(), 2)
-        }
+        if(lastClicked + 1000 >= System.currentTimeMillis()) return
+        lastClicked = System.currentTimeMillis()
+
+        /*val trait = event.npc.getOrAddTrait(CorpseTrait::class.java)
         if(trait.isOpened) { // no duping (hee hee hee haw)
             return
-        }
-        if(timeSpawned + gracePeriod >= System.currentTimeMillis() && clicker.uniqueId != ownerUUID) {
+        }*/
+        if(isLocked() && clicker.uniqueId != ownerUUID) {
             val matcher = timePatternRegex.matcher(corpseLockedMessage)
             var message = corpseLockedMessage
             if(matcher.find()) {
@@ -133,8 +123,24 @@ class CorpseTrait: Trait("CorpseTrait") {
             clicker.sendMessage(message.formatMinimessage())
             return
         }
-        clicker.openMenu(CorpseInventory(clicker.playerMenuUtility, event.npc, deserializedItemstacks, nameFormat))
-        trait.isOpened = true
+
+        deserializedItemstacks.forEach {
+            npc.storedLocation.world.dropItem(npc.storedLocation, it)
+        }
+
+        ownerUUID.cachedCorpses = ownerUUID.cachedCorpses
+            .toMutableList()
+            .apply {
+                remove(npc)
+            }
+        destroyCorpse()
+
+        /*clicker.openMenu(CorpseInventory(clicker.playerMenuUtility, event.npc, deserializedItemstacks, nameFormat))
+        trait.isOpened = true*/
+    }
+
+    private fun isLocked(): Boolean {
+        return timeSpawned + gracePeriod >= System.currentTimeMillis()
     }
 
     private fun spawnHitBoxes() {
