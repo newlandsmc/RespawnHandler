@@ -28,12 +28,8 @@ class PlayerDeath(private val plugin: RespawnHandler): Listener {
         event.drops.clear()
         plugin.logger.warning("Captured death for ${player.name}, at ${player.location.x}x ${player.location.y}y ${player.location.z}z")
         // Check if the player's inventory is empty.
-        if (player.inventory.contents == null) {
-            plugin.logger.warning("Inventory is null, not spawning corpse")
-            return
-        }
 
-        var items = player.inventory.contents!!.clone().toList().filterNotNull().filter { it.type != Material.AIR }
+        var items = player.inventory.contents.clone().toList().filterNotNull().filter { it.type != Material.AIR }
 
         items = items.compressSimilarItems()
 
@@ -69,9 +65,17 @@ class PlayerDeath(private val plugin: RespawnHandler): Listener {
             plugin.logger.warning("last damage cause was null, returning")
             return
         }
-        if (event.player.lastDamageCause?.cause == DamageCause.LAVA
-            || event.player.lastDamageCause?.cause == DamageCause.VOID) {
-            plugin.logger.warning("Damage cause is lava or void, not spawning corpse.")
+        if (event.player.lastDamageCause?.cause == DamageCause.VOID) {
+            plugin.logger.warning("Damage cause is void, not spawning corpse.")
+            return
+        }else if (event.player.lastDamageCause?.cause == DamageCause.LAVA) {
+            plugin.logger.warning("Dropping any netherite items")
+            items.filter { it.type.name.contains("NETHERITE") }.forEach { item ->
+                player.world.dropItem(
+                    player.location,
+                    item
+                )
+            }
             return
         }
 
