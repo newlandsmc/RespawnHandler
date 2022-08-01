@@ -2,7 +2,7 @@ package me.cookie.menu
 
 import me.cookie.data.CORPSE_PICKEDUP_NOSOULS
 import me.cookie.data.CORPSE_PICKEDUP_SOULS
-import me.cookie.cachedCorpses
+import me.cookie.data.cachedCorpses
 import me.cookie.cookiecore.PlayerMenuUtility
 import me.cookie.cookiecore.formatMinimessage
 import me.cookie.cookiecore.gui.Menu
@@ -76,18 +76,14 @@ class CorpseInventory(
         if(e.reason == InventoryCloseEvent.Reason.OPEN_NEW) return
         if(corpse.storedLocation == null) return
         val storedLoc = corpse.storedLocation.clone()
-        e.inventory.contents?.forEach {
+        e.inventory.contents.forEach {
             if (it != null) {
                 storedLoc.world.dropItem(storedLoc, it)
             }
         }
         object: BukkitRunnable() {
             override fun run() {
-                corpseTrait.ownerUUID.cachedCorpses = corpseTrait.ownerUUID.cachedCorpses
-                    .toMutableList()
-                    .apply {
-                        remove(corpse)
-                    }
+                corpseTrait.ownerUUID.cachedCorpses = corpseTrait.ownerUUID.cachedCorpses.filter { it != corpse }
                 corpse.getOrAddTrait(CorpseTrait::class.java).destroyCorpse()
             }
         }.runTaskLater(CitizensAPI.getPlugin(), 2)

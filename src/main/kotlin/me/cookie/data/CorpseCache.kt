@@ -1,4 +1,4 @@
-package me.cookie
+package me.cookie.data
 
 import net.citizensnpcs.api.npc.NPC
 import org.bukkit.entity.Player
@@ -16,8 +16,7 @@ var Player.cachedCorpses: List<NPC>
 
 var UUID.cachedCorpses: List<NPC>
     get() {
-        if(!cachedCorpsesMap.containsKey(this)) return emptyList()
-        return cachedCorpsesMap[this] ?: return emptyList()
+        return cachedCorpsesMap[this] ?: emptyList()
     }
     set(value) {
         cachedCorpsesMap[this] = value

@@ -1,7 +1,7 @@
 package me.cookie.traits
 
 import me.cookie.RespawnHandler
-import me.cookie.cachedCorpses
+import me.cookie.data.cachedCorpses
 import me.cookie.closestNumberToDivisibleBy
 import me.cookie.cookiecore.deseralizeItemStacks
 import me.cookie.cookiecore.formatMillis
@@ -128,11 +128,7 @@ class CorpseTrait: Trait("CorpseTrait") {
             npc.storedLocation.world.dropItem(npc.storedLocation, it)
         }
 
-        ownerUUID.cachedCorpses = ownerUUID.cachedCorpses
-            .toMutableList()
-            .apply {
-                remove(npc)
-            }
+        ownerUUID.cachedCorpses = ownerUUID.cachedCorpses.filter { it != npc }
         destroyCorpse()
 
         /*clicker.openMenu(CorpseInventory(clicker.playerMenuUtility, event.npc, deserializedItemstacks, nameFormat))
@@ -161,7 +157,7 @@ class CorpseTrait: Trait("CorpseTrait") {
                 isSilent = true
                 setGravity(false)
                 setAI(false)
-                addPotionEffect(
+                /*addPotionEffect(
                     PotionEffect(
                         PotionEffectType.INVISIBILITY,
                         Integer.MAX_VALUE,
@@ -169,7 +165,7 @@ class CorpseTrait: Trait("CorpseTrait") {
                         false,
                         false
                     )
-                )
+                )*/
                 persistentDataContainer.set(
                     NamespacedKey(plugin, "corpse_Id"),
                     PersistentDataType.INTEGER,
@@ -245,11 +241,7 @@ class CorpseTrait: Trait("CorpseTrait") {
                         decaying = true
                     }
                     if(decayWhen - System.currentTimeMillis() <= 0) {
-                        ownerUUID.cachedCorpses = ownerUUID.cachedCorpses
-                            .toMutableList()
-                            .apply {
-                                remove(npc)
-                            }
+                        ownerUUID.cachedCorpses = ownerUUID.cachedCorpses.filter { it != npc }
                         npc.getOrAddTrait(CorpseTrait::class.java).destroyCorpse()
                         cancel()
                     }
@@ -265,9 +257,10 @@ class CorpseTrait: Trait("CorpseTrait") {
         }.runTaskTimer(CitizensAPI.getPlugin(), 20, 20)
     }
 
-    private fun destroyHitBoxes() {
-        hitBoxes.forEach { it.remove()}
-        hitBoxes.clear()
+    fun destroyHitBoxes() {
+        hitBoxes.forEach {
+            it.remove()
+        }
     }
 
     override fun onDespawn() {

@@ -22,6 +22,6 @@ class CorpseHitBoxClick(private val plugin: RespawnHandler): Listener {
         val id = entity.persistentDataContainer
             .get(NamespacedKey(plugin, "corpse_Id"), PersistentDataType.INTEGER)!!
         val npc = CitizensAPI.getNPCRegistry().getById(id)
-        npc?.getOrAddTrait(CorpseTrait::class.java)!!.onClick(NPCRightClickEvent(npc, event.player))
+        npc?.getOrAddTrait(CorpseTrait::class.java)?.onClick(NPCRightClickEvent(npc, event.player))
     }
 }

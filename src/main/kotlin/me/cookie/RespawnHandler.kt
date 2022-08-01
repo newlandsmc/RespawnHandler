@@ -68,4 +68,13 @@ class RespawnHandler: JavaPlugin() {
             itemChanceMap[item] = Chance(min, max)
         }
     }
+
+    override fun onDisable() {
+        CitizensAPI.getNPCRegistry().forEach {
+            if(it.hasTrait(CorpseTrait::class.java)) {
+                val trait = it.getOrAddTrait(CorpseTrait::class.java)
+                trait.destroyHitBoxes()
+            }
+        }
+    }
 }
