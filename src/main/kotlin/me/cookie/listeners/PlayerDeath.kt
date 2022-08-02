@@ -1,8 +1,13 @@
 package me.cookie.listeners
 
 import me.cookie.CorpseEntity
+import me.cookie.DamageBoost
 import me.cookie.RespawnHandler
 import me.cookie.cookiecore.compressSimilarItems
+import me.cookie.damageBoost
+import me.cookie.data.DAMAGE_BOOST_DURATION
+import me.cookie.data.DAMAGE_BOOST_MAX_STACK
+import me.cookie.data.DAMAGE_BOOST_PERCENTAGE
 import me.cookie.data.ROUND
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -25,10 +30,25 @@ class PlayerDeath(private val plugin: RespawnHandler): Listener {
 
     @EventHandler fun onPlayerDeath(event: PlayerDeathEvent) {
         val player = event.player
-        event.drops.clear()
-        plugin.logger.warning("Captured death for ${player.name}, at ${player.location.x}x ${player.location.y}y ${player.location.z}z")
-        // Check if the player's inventory is empty.
 
+        // ================ Damage Boost ====================
+
+        val damageBoost = player.damageBoost
+
+        println(DAMAGE_BOOST_PERCENTAGE * DAMAGE_BOOST_MAX_STACK)
+
+        if(damageBoost.started + DAMAGE_BOOST_DURATION * 60000 < System.currentTimeMillis()){
+            player.damageBoost = DamageBoost(0, System.currentTimeMillis())
+        }
+        if (damageBoost.percent != DAMAGE_BOOST_PERCENTAGE * DAMAGE_BOOST_MAX_STACK){
+            player.damageBoost = DamageBoost(
+                damageBoost.percent + DAMAGE_BOOST_PERCENTAGE, System.currentTimeMillis()
+            )
+        }
+
+        // ================== Corpses =======================
+
+        event.drops.clear()
         var items = player.inventory.contents.clone().toList().filterNotNull().filter { it.type != Material.AIR }
 
         items = items.compressSimilarItems()
@@ -55,21 +75,13 @@ class PlayerDeath(private val plugin: RespawnHandler): Listener {
 
         items.removeAll(soulboundedItems)
 
-        // Don't spawn corpse if there's no items to place in it
-        if(items.isEmpty()) {
-            plugin.logger.warning("no items to put in corpse, not spawning corpse")
-            return
-        }
         // If death is to lava/void, kill player's items (non soulbound)
         if(event.player.lastDamageCause == null){
-            plugin.logger.warning("last damage cause was null, returning")
             return
         }
         if (event.player.lastDamageCause?.cause == DamageCause.VOID) {
-            plugin.logger.warning("Damage cause is void, not spawning corpse.")
             return
         }else if (event.player.lastDamageCause?.cause == DamageCause.LAVA) {
-            plugin.logger.warning("Dropping any netherite items")
             items.filter { it.type.name.contains("NETHERITE") }.forEach { item ->
                 player.world.dropItem(
                     player.location,
@@ -78,8 +90,6 @@ class PlayerDeath(private val plugin: RespawnHandler): Listener {
             }
             return
         }
-
-        plugin.logger.warning("successfully spawned corpse for ${player.name}")
         val corpse = CorpseEntity(player, items)
         corpse.spawnCorpse(player.location)
     }

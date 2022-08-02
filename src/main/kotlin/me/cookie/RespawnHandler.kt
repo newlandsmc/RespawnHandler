@@ -3,10 +3,7 @@ package me.cookie
 import me.cookie.commands.SoulBound
 import me.cookie.commands.SoulsAdmin
 import me.cookie.cookiecore.data.sql.H2Storage
-import me.cookie.listeners.CorpseHitBoxClick
-import me.cookie.listeners.PlayerDeath
-import me.cookie.listeners.PlayerJoin
-import me.cookie.listeners.PlayerQuit
+import me.cookie.listeners.*
 import me.cookie.traits.CorpseTrait
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.trait.TraitInfo
@@ -41,6 +38,7 @@ class RespawnHandler: JavaPlugin() {
         pluginManager.registerEvents(PlayerJoin(), this)
         pluginManager.registerEvents(PlayerQuit(), this)
         pluginManager.registerEvents(CorpseHitBoxClick(this), this)
+        pluginManager.registerEvents(EntityDamageEntity(), this)
 
         getCommand("soulsadmin")!!.setExecutor(SoulsAdmin())
         getCommand("soulbound")!!.setExecutor(SoulBound())

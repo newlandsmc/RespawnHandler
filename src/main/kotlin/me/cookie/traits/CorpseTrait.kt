@@ -157,7 +157,7 @@ class CorpseTrait: Trait("CorpseTrait") {
                 isSilent = true
                 setGravity(false)
                 setAI(false)
-                /*addPotionEffect(
+                addPotionEffect(
                     PotionEffect(
                         PotionEffectType.INVISIBILITY,
                         Integer.MAX_VALUE,
@@ -165,7 +165,7 @@ class CorpseTrait: Trait("CorpseTrait") {
                         false,
                         false
                     )
-                )*/
+                )
                 persistentDataContainer.set(
                     NamespacedKey(plugin, "corpse_Id"),
                     PersistentDataType.INTEGER,
