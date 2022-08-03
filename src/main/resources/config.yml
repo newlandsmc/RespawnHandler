@@ -16,7 +16,7 @@ corpse-name: "<red>(corpseName)'s corpse" # name in gui
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=  Damage  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 damage-debuff-duration: 5 # in minutes
 damage-debuff-percentage: 10
-damage-debuff-max-stack: 5 # max amount of times the player can stack their damage boost
+damage-debuff-max-stack: 5 # max amount of times the player can stack their damage debuff
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=  Items  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 round-up: true # true to round up, false to round down
