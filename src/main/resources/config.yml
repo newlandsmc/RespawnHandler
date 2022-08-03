@@ -14,9 +14,9 @@ corpse-nosouls-message: "<red>No souls were found on this corpse."
 corpse-name: "<red>(corpseName)'s corpse" # name in gui
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=  Damage  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
-damage-boost-duration: 5 # in minutes
-damage-boost-percentage: 10
-damage-boost-max-stack: 10 # max amount of times the player can stack their damage boost
+damage-debuff-duration: 5 # in minutes
+damage-debuff-percentage: 10
+damage-debuff-max-stack: 5 # max amount of times the player can stack their damage boost
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=  Items  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 round-up: true # true to round up, false to round down

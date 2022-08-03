@@ -14,10 +14,10 @@ fun closestNumberToDivisibleBy(number: Float, divisibleBy: Int): Float { // Grea
     return if (abs(number - n1) < abs(number - n2)) n1 else n2
 }
 
-val playerDamageBoostMap = mutableMapOf<UUID, DamageBoost>()
+val playerDamageDebuffMap = mutableMapOf<UUID, DamageDebuff>()
 
-var Player.damageBoost: DamageBoost
-    get() = playerDamageBoostMap[uniqueId] ?: DamageBoost(0, System.currentTimeMillis())
+var Player.damageDebuff: DamageDebuff
+    get() = playerDamageDebuffMap[uniqueId] ?: DamageDebuff(0, System.currentTimeMillis())
     set(value) {
-        playerDamageBoostMap[uniqueId] = value
+        playerDamageDebuffMap[uniqueId] = value
     }

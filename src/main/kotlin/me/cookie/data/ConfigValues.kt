@@ -27,8 +27,8 @@ val SOULBOUND_COST: Int = config.getInt("soulbound-cost", 50)
 
 val ROUND = config.getBoolean("round-up", false)
 
-val DAMAGE_BOOST_DURATION = config.getInt("damage-boost-duration", 5)
+val DAMAGE_DEBUFF_DURATION = config.getInt("damage-debuff-duration", 5)
 
-val DAMAGE_BOOST_PERCENTAGE = config.getInt("damage-boost-percentage", 10)
+val DAMAGE_DEBUFF_PERCENTAGE = config.getInt("damage-debuff-percentage", 10)
 
-val DAMAGE_BOOST_MAX_STACK = config.getInt("damage-boost-max-stack", 10)
+val DAMAGE_DEBUFF_MAX_STACK = config.getInt("damage-debuff-max-stack", 10)

@@ -1,13 +1,8 @@
 package me.cookie.listeners
 
 import me.cookie.CorpseEntity
-import me.cookie.DamageBoost
 import me.cookie.RespawnHandler
 import me.cookie.cookiecore.compressSimilarItems
-import me.cookie.damageBoost
-import me.cookie.data.DAMAGE_BOOST_DURATION
-import me.cookie.data.DAMAGE_BOOST_MAX_STACK
-import me.cookie.data.DAMAGE_BOOST_PERCENTAGE
 import me.cookie.data.ROUND
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -30,21 +25,6 @@ class PlayerDeath(private val plugin: RespawnHandler): Listener {
 
     @EventHandler fun onPlayerDeath(event: PlayerDeathEvent) {
         val player = event.player
-
-        // ================ Damage Boost ====================
-
-        val damageBoost = player.damageBoost
-
-        println(DAMAGE_BOOST_PERCENTAGE * DAMAGE_BOOST_MAX_STACK)
-
-        if(damageBoost.started + DAMAGE_BOOST_DURATION * 60000 < System.currentTimeMillis()){
-            player.damageBoost = DamageBoost(0, System.currentTimeMillis())
-        }
-        if (damageBoost.percent != DAMAGE_BOOST_PERCENTAGE * DAMAGE_BOOST_MAX_STACK){
-            player.damageBoost = DamageBoost(
-                damageBoost.percent + DAMAGE_BOOST_PERCENTAGE, System.currentTimeMillis()
-            )
-        }
 
         // ================== Corpses =======================
 
