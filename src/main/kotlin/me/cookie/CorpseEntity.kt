@@ -9,6 +9,7 @@ import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.trait.HologramTrait
 import net.citizensnpcs.trait.SkinTrait
+import org.bukkit.Bukkit
 import org.bukkit.Bukkit.createInventory
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
@@ -17,10 +18,14 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import java.util.*
 
 class CorpseEntity(
-    private val player: Player,
+    private val playerName: String,
+    private val playerUUID: UUID,
+    private val playerSouls: Int,
     private val items: List<ItemStack>,
+    private val corpse: Corpse
     ) {
 
     private val npc: NPC
@@ -30,15 +35,15 @@ class CorpseEntity(
         inventory = createInventory(
             null,
             SlotsType.CHEST_45.size,
-            player.name.plus("'s Corpse").formatMinimessage()
+            playerName.plus("'s Corpse").formatMinimessage()
         )
     }
     private fun createNPC(): NPC {
         return CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, "").apply {
-            getOrAddTrait(SkinTrait::class.java).skinName = player.name
+            getOrAddTrait(SkinTrait::class.java).skinName = playerName
             getOrAddTrait(CorpseTrait::class.java).apply {
-                ownerName = player.name
-                ownerUUID = player.uniqueId
+                ownerName = playerName
+                ownerUUID = playerUUID
                 itemstacks = items.serialize()
                 timeSpawned = System.currentTimeMillis()
                 maxCorpses = CORPSE_LIMIT
@@ -46,7 +51,8 @@ class CorpseEntity(
                 decayTime = CORPSE_DECAY_TIME * 60000
                 nameFormat = CORPSE_NAME
                 corpseLockedMessage = CORPSE_LOCKED_MESSAGE
-                souls = player.souls
+                souls = playerSouls
+                id = corpse.id
             }
 
             getOrAddTrait(HologramTrait::class.java).apply {
@@ -75,8 +81,8 @@ class CorpseEntity(
                 false
             )
         )
-        player.souls = 0
-
+        //player.souls = 0
+        Bukkit.getPlayer(playerUUID)?.souls = 0;
         return npc
     }
 }

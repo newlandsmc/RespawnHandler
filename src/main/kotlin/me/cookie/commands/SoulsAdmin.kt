@@ -2,7 +2,7 @@ package me.cookie.commands
 
 import me.cookie.cookiecore.NO_PERMISSION
 import me.cookie.cookiecore.formatMinimessage
-import me.cookie.souls
+import me.cookie.data.souls
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor

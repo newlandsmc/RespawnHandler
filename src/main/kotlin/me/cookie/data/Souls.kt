@@ -1,5 +1,6 @@
-package me.cookie
+package me.cookie.data
 
+import me.cookie.RespawnHandler
 import me.cookie.cookiecore.data.Values
 import org.bukkit.entity.Player
 import org.bukkit.metadata.FixedMetadataValue

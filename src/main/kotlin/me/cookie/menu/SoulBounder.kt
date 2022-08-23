@@ -7,7 +7,7 @@ import me.cookie.cookiecore.formatMinimessage
 import me.cookie.cookiecore.gui.Menu
 import me.cookie.cookiecore.gui.SlotsType
 import me.cookie.data.SOULBOUND_COST
-import me.cookie.souls
+import me.cookie.data.souls
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration

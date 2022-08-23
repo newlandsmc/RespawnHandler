@@ -1,6 +1,6 @@
 package me.cookie.listeners
 
-import me.cookie.loadSouls
+import me.cookie.data.loadSouls
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.trait.SkinTrait
 import org.bukkit.entity.EntityType

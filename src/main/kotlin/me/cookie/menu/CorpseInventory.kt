@@ -7,7 +7,7 @@ import me.cookie.cookiecore.PlayerMenuUtility
 import me.cookie.cookiecore.formatMinimessage
 import me.cookie.cookiecore.gui.Menu
 import me.cookie.cookiecore.gui.SlotsType
-import me.cookie.souls
+import me.cookie.data.souls
 import me.cookie.traits.CorpseTrait
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC

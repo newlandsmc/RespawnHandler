@@ -7,12 +7,15 @@ import me.cookie.cookiecore.deseralizeItemStacks
 import me.cookie.cookiecore.formatMillis
 import me.cookie.cookiecore.formatMinimessage
 import me.cookie.cookiecore.formatPlayerPlaceholders
+import me.cookie.data.setCorpseClaimed
+import me.cookie.data.setCorpseExpired
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.citizensnpcs.api.persistence.Persist
 import net.citizensnpcs.api.trait.Trait
 import net.citizensnpcs.trait.HologramTrait
 import net.citizensnpcs.util.PlayerAnimation
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Entity
@@ -40,6 +43,7 @@ class CorpseTrait: Trait("CorpseTrait") {
     @Persist("CorpseDecayTime") var decayTime: Long = 172800000
     @Persist("CorpseGraceTime") var gracePeriod: Long = 600000
     @Persist("LastClicked") var lastClicked: Long = System.currentTimeMillis()
+    @Persist("CorpseId") var id = -1
 
     private val hitBoxes = mutableListOf<Entity>()
     /*private var isOpened = false*/
@@ -130,6 +134,9 @@ class CorpseTrait: Trait("CorpseTrait") {
 
         ownerUUID.cachedCorpses = ownerUUID.cachedCorpses.filter { it != npc }
         destroyCorpse()
+        Bukkit.getServer().scheduler.runTaskAsynchronously(RespawnHandler.instance, Runnable {
+            setCorpseClaimed(this.ownerUUID, id, true, event.clicker.uniqueId)
+        })
 
         /*clicker.openMenu(CorpseInventory(clicker.playerMenuUtility, event.npc, deserializedItemstacks, nameFormat))
         trait.isOpened = true*/
@@ -243,6 +250,7 @@ class CorpseTrait: Trait("CorpseTrait") {
                     if(decayWhen - System.currentTimeMillis() <= 0) {
                         ownerUUID.cachedCorpses = ownerUUID.cachedCorpses.filter { it != npc }
                         npc.getOrAddTrait(CorpseTrait::class.java).destroyCorpse()
+                        setCorpseExpired(this@CorpseTrait.ownerUUID, id)
                         cancel()
                     }
                     return

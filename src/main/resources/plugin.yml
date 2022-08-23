@@ -21,3 +21,9 @@ commands:
     description: 'Opens a soulbound GUI where a player can soulbind their items.'
     aliases:
       - soulbind
+  corpses:
+    permission: 'respawnhandler.corpses'
+    usage: '/corpses'
+    description: 'Admin command to manage corpses.'
+    aliases:
+      - corpse
