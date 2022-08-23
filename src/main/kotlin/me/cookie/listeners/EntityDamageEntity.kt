@@ -35,7 +35,7 @@ class EntityDamageEntity: Listener{
                 println("Damage Debuff less than max stack")
                 player.damageDebuff = DamageDebuff(
                     damageDebuff.percent + DAMAGE_DEBUFF_PERCENTAGE,
-                    System.currentTimeMillis() + DAMAGE_DEBUFF_DURATION * 60000
+                    System.currentTimeMillis() + /*(5 * 1000)*/ (DAMAGE_DEBUFF_DURATION * 60000)
                 )
             }
         }

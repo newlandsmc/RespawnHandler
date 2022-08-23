@@ -47,6 +47,7 @@ class RespawnHandler: JavaPlugin() {
         loadChances()
 
         Souls(this).startTask()
+        DataUpdateRunnable().runTaskTimer(this, 20L, 20L)
     }
 
     private fun loadChances() {
