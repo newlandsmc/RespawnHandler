@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CorpsesCommand(private val plugin: RespawnHandler): CommandExecutor {
+class CorpsesCommand(private val plugin: RespawnHandler) : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         // /corpses history <player> <page>
         // /corpses spawn <player> <id>
@@ -39,7 +39,8 @@ class CorpsesCommand(private val plugin: RespawnHandler): CommandExecutor {
                     val pageStart = (page - 1) * CORPSES_PER_PAGE
                     val offlinePlayer = plugin.server.getOfflinePlayer(player)
                     val uuid = offlinePlayer.uniqueId
-                    val preparedStatement = connection.prepareStatement("SELECT * FROM corpses WHERE uuid = '$uuid' ORDER BY id DESC LIMIT $pageStart, $CORPSES_PER_PAGE")
+                    val preparedStatement =
+                        connection.prepareStatement("SELECT * FROM corpses WHERE uuid = '$uuid' ORDER BY id DESC LIMIT $pageStart, $CORPSES_PER_PAGE")
                     val results = preparedStatement.executeQuery()
                     val corpses = mutableListOf<Corpse>()
                     while (results.next()) {
@@ -53,7 +54,8 @@ class CorpsesCommand(private val plugin: RespawnHandler): CommandExecutor {
                         val date = dateFormat.format(timestamp)
                         var status: String;
                         if (corpse.claimed) {
-                            val claimedByWho = plugin.server.getOfflinePlayer(UUID.fromString(corpse.claimedByUUID)).name
+                            val claimedByWho =
+                                plugin.server.getOfflinePlayer(UUID.fromString(corpse.claimedByUUID)).name
                             status = "<green>Claimed By ${claimedByWho}</green>"
                         } else if (corpse.expired) {
                             status = "<red>Expired</red>"
@@ -68,6 +70,7 @@ class CorpsesCommand(private val plugin: RespawnHandler): CommandExecutor {
                     sender.sendMessage(s.formatMinimessage())
                 }
             }
+
             "spawn" -> {
                 val player = args[1]
                 val id = args[2].toInt()
@@ -75,14 +78,20 @@ class CorpsesCommand(private val plugin: RespawnHandler): CommandExecutor {
                 runAsync {
                     val connection = getCorpsesConnection()
                     val offlinePlayer = plugin.server.getOfflinePlayer(player)
-                    val preparedStatement = connection.prepareStatement("SELECT * FROM corpses WHERE uuid = '${offlinePlayer.uniqueId}' AND id = $id")
+                    val preparedStatement =
+                        connection.prepareStatement("SELECT * FROM corpses WHERE uuid = '${offlinePlayer.uniqueId}' AND id = $id")
                     val results = preparedStatement.executeQuery()
                     if (!results.next()) {
                         sender.sendMessage("<red>No corpse found with id $id".formatMinimessage())
                         return@runAsync
                     }
                     val corpse = buildCorpseFromResult(results)
-                    val location = Location(plugin.server.getWorld(corpse.world), corpse.x.toDouble(), corpse.y.toDouble(), corpse.z.toDouble())
+                    val location = Location(
+                        plugin.server.getWorld(corpse.world),
+                        corpse.x.toDouble(),
+                        corpse.y.toDouble(),
+                        corpse.z.toDouble()
+                    )
                     val items = results.getString("inventory").deseralizeItemStacks()
                     val corpseName: String = offlinePlayer.name.toString();
                     runSync {
@@ -92,6 +101,7 @@ class CorpsesCommand(private val plugin: RespawnHandler): CommandExecutor {
                     }
                 }
             }
+
             else -> {
                 sender.sendMessage("<red>Unknown sub-command: $subCommand".formatMinimessage())
                 sendUsage(sender)
@@ -105,9 +115,11 @@ class CorpsesCommand(private val plugin: RespawnHandler): CommandExecutor {
         sender.sendMessage("<red>/corpses history <player> <page>".formatMinimessage())
         sender.sendMessage("<red>/corpses spawn <player> <id>".formatMinimessage())
     }
+
     fun runAsync(runnable: () -> Unit) {
         plugin.server.scheduler.runTaskAsynchronously(plugin, runnable)
     }
+
     fun runSync(runnable: () -> Unit) {
         plugin.server.scheduler.runTask(plugin, runnable)
     }

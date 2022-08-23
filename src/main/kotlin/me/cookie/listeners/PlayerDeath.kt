@@ -85,6 +85,7 @@ class PlayerDeath(private val plugin: RespawnHandler) : Listener {
             return
         }
         val location = player.location
+        plugin.logger.info("Creating corpse at " + location.x + " " + location.y + " " + location.z)
 
         val corpseData = Corpse(
             getNextCorpseId(player.uniqueId), player.uniqueId.toString(), location.x.toInt(), location.y.toInt(), location.z.toInt(),
