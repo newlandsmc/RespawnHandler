@@ -9,7 +9,7 @@ class DataUpdateRunnable: BukkitRunnable() {
         val iter = playerDamageDebuffMap.entries.iterator()
         while (iter.hasNext()) {
             val entry = iter.next()
-            val k = entry.key
+            //val k = entry.key
             val v = entry.value
             val player = Bukkit.getPlayer(entry.key)
             if (player != null) {

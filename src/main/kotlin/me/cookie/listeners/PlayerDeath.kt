@@ -26,6 +26,7 @@ class PlayerDeath(private val plugin: RespawnHandler) : Listener {
     }
 
     @EventHandler
+    @Suppress("DEPRECATION")
     fun onPlayerDeath(event: PlayerDeathEvent) {
         val player = event.player
 
