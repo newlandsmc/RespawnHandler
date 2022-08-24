@@ -66,7 +66,7 @@ class PlayerDeath(private val plugin: RespawnHandler) : Listener {
         val base64Data = items.serialize()
 
         // If death is to lava/void, kill player's items (non soulbound)
-        plugin.logger.info("Death cause: " + event.entity.getLastDamageCause())
+        plugin.logger.info("Death cause: " + event.entity.getLastDamageCause()?.cause)
         if (event.player.lastDamageCause == null) {
             plugin.logger.info("Not creating corpse because there is no last damage cause")
             return
