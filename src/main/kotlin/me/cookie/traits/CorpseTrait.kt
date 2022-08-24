@@ -128,10 +128,12 @@ class CorpseTrait: Trait("CorpseTrait") {
             return
         }
 
+        val size = deserializedItemstacks.size
         deserializedItemstacks.forEach {
             npc.storedLocation.world.dropItem(npc.storedLocation, it)
         }
-
+        clicker.sendMessage("<green>Dropped $size items from your corpse!".formatMinimessage())
+        plugin.logger.info("Dropped $size items from ${ownerName}'s corpse, claimed by ${clicker.name}")
         ownerUUID.cachedCorpses = ownerUUID.cachedCorpses.filter { it != npc }
         destroyCorpse()
         Bukkit.getServer().scheduler.runTaskAsynchronously(RespawnHandler.instance, Runnable {
