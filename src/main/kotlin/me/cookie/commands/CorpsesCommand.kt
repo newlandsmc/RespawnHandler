@@ -7,6 +7,7 @@ import me.cookie.cookiecore.formatMinimessage
 import me.cookie.data.Corpse
 import me.cookie.data.buildCorpseFromResult
 import me.cookie.data.getCorpsesConnection
+import me.cookie.util.TimeAgo
 import org.bukkit.Location
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -50,8 +51,9 @@ class CorpsesCommand(private val plugin: RespawnHandler) : CommandExecutor {
                     for (corpse in corpses) {
                         //sender.sendMessage("<green>${corpse.id}: <yellow>${corpse.x}, ${corpse.y}, ${corpse.z}</yellow> ${corpse.world} ${corpse.cause} ${corpse.timestamp} ${corpse.claimed}".formatMinimessage())
                         val timestamp: Long = corpse.timestamp
-                        val dateFormat = SimpleDateFormat("MM/dd hh:mm:ss")
-                        val date = dateFormat.format(timestamp)
+                        //val dateFormat = SimpleDateFormat("MM/dd hh:mm:ss")
+                        //val date = dateFormat.format(timestamp)
+                        val date = TimeAgo.toDurationUnixMillis(timestamp)
                         var status: String;
                         if (corpse.claimed) {
                             val claimedByWho =
