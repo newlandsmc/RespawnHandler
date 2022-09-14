@@ -1,5 +1,6 @@
 package me.cookie
 
+import CorpsePortal
 import me.cookie.commands.CorpsesCommand
 import me.cookie.commands.SoulBound
 import me.cookie.commands.SoulsAdmin
@@ -65,6 +66,7 @@ class RespawnHandler : JavaPlugin() {
         pluginManager.registerEvents(PlayerJoin(), this)
         pluginManager.registerEvents(PlayerQuit(), this)
         pluginManager.registerEvents(CorpseHitBoxClick(this), this)
+        pluginManager.registerEvents(CorpsePortal(this), this)
         pluginManager.registerEvents(EntityDamageEntity(), this)
 
         getCommand("soulsadmin")!!.setExecutor(SoulsAdmin())
