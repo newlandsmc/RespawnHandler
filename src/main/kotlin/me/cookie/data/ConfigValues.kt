@@ -32,3 +32,5 @@ val DAMAGE_DEBUFF_DURATION = config.getInt("damage-debuff-duration", 5)
 val DAMAGE_DEBUFF_PERCENTAGE = config.getInt("damage-debuff-percentage", 10)
 
 val DAMAGE_DEBUFF_MAX_STACK = config.getInt("damage-debuff-max-stack", 5)
+
+val DAMAGE_DEBUFF_MESSAGE = config.getString("damage-debuff-message", "<red>You have blood on your hands")

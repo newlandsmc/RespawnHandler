@@ -1,9 +1,11 @@
 package me.cookie.listeners
 
 import me.cookie.DamageDebuff
+import me.cookie.cookiecore.formatMinimessage
 import me.cookie.damageDebuff
 import me.cookie.data.DAMAGE_DEBUFF_DURATION
 import me.cookie.data.DAMAGE_DEBUFF_MAX_STACK
+import me.cookie.data.DAMAGE_DEBUFF_MESSAGE
 import me.cookie.data.DAMAGE_DEBUFF_PERCENTAGE
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -37,6 +39,7 @@ class EntityDamageEntity: Listener{
                     damageDebuff.percent + DAMAGE_DEBUFF_PERCENTAGE,
                     System.currentTimeMillis() + /*(5 * 1000)*/ (DAMAGE_DEBUFF_DURATION * 60000)
                 )
+                DAMAGE_DEBUFF_MESSAGE?.let { player.sendMessage(it.formatMinimessage()) }
             }
         }
     }

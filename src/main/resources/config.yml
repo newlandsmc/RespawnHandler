@@ -17,6 +17,7 @@ corpse-name: "<red>(corpseName)'s corpse" # name in gui
 damage-debuff-duration: 5 # in minutes
 damage-debuff-percentage: 10
 damage-debuff-max-stack: 5 # max amount of times the player can stack their damage debuff
+damage-debuff-message: '<red>You have blood on your hands' # Message sent when a player kills another player
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=  Items  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 round-up: true # true to round up, false to round down
