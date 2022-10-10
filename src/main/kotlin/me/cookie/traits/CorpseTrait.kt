@@ -59,6 +59,8 @@ class CorpseTrait: Trait("CorpseTrait") {
     private var deserializedItemstacks = listOf<ItemStack>()
 
     override fun onSpawn() {
+        plugin.logger.info("CorpseTrait onSpawn called!")
+        /*
         if(spawnedBefore) {
             // Needs a bit more of a delay for the skin loading. Skins are uncached on server restart
             object: BukkitRunnable() {
@@ -70,6 +72,21 @@ class CorpseTrait: Trait("CorpseTrait") {
             spawnedBefore = true
             spawnSleeping()
         }
+         */
+        if (npc == null) {
+            plugin.logger.info("npc is null!")
+            return
+        }
+        if (npc.entity == null) {
+            plugin.logger.info("Entity is null!")
+            return
+        }
+
+        object: BukkitRunnable() {
+            override fun run() {
+                spawnSleeping()
+            }
+        }.runTaskLater(CitizensAPI.getPlugin(), 40)
         deserializedItemstacks = itemstacks.deseralizeItemStacks()
         spawnedBefore = true
 
@@ -89,6 +106,7 @@ class CorpseTrait: Trait("CorpseTrait") {
     }
 
     fun spawnSleeping() {
+        plugin.logger.info("Spawning sleeping player...")
         (npc.entity as Player).sleep(npc.storedLocation.clone(), true)
         PlayerAnimation.SLEEP.play(npc.entity as Player)
 
