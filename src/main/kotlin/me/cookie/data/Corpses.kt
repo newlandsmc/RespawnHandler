@@ -88,8 +88,36 @@ fun setCorpseExpired(uuid: UUID, id: Int) {
         Values(true)
     )
 }
+fun setCorpseSpawnResult(uuid: UUID, id: Int, result: SpawnResult) {
+    pluginInstance.corpses.updateColumnsWhere(
+        "corpses",
+        listOf("spawnStatus"),
+        "UUID = '$uuid' AND id = '$id'",
+        Values(result.toString())
+    )
+}
+fun getCorpseSpawnResult(uuid: UUID, id: Int): SpawnResult {
+    val connection: Connection = getCorpsesConnection()
+    val result = connection.prepareStatement("SELECT spawnStatus FROM corpses WHERE UUID = '$uuid' AND id = '$id'").executeQuery()
+    if (result.next()) {
+        return SpawnResult.valueOf(result.getString("spawnStatus"))
+    }
+    return SpawnResult.UNKNOWN
+}
+enum class SpawnResult {
+    SUCCESS,
+    FAILED,
+    UNKNOWN
+}
 
 fun buildCorpseFromResult(result: ResultSet): Corpse {
+    var spawnStatusStr: String;
+    try {
+        spawnStatusStr = result.getString("spawnStatus")
+    } catch (e: Exception) {
+        spawnStatusStr = SpawnResult.UNKNOWN.toString()
+    }
+    val spawnStatus: SpawnResult = SpawnResult.valueOf(spawnStatusStr)
     return Corpse(
         result.getInt("id"),
         result.getString("UUID"),
@@ -100,6 +128,7 @@ fun buildCorpseFromResult(result: ResultSet): Corpse {
         result.getInt("items"),
         result.getBoolean("expired"),
         result.getString("claimedByUUID"),
+        spawnStatus
     )
 }
 
@@ -116,5 +145,6 @@ data class Corpse(
     val claimed: Boolean,
     val items: Int,
     val expired: Boolean,
-    val claimedByUUID: String
+    val claimedByUUID: String,
+    val spawnStatus: SpawnResult = SpawnResult.UNKNOWN
 )

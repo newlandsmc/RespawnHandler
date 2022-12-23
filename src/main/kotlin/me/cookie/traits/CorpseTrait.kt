@@ -1,14 +1,12 @@
 package me.cookie.traits
 
 import me.cookie.RespawnHandler
-import me.cookie.data.cachedCorpses
 import me.cookie.closestNumberToDivisibleBy
 import me.cookie.cookiecore.deseralizeItemStacks
 import me.cookie.cookiecore.formatMillis
 import me.cookie.cookiecore.formatMinimessage
 import me.cookie.cookiecore.formatPlayerPlaceholders
-import me.cookie.data.setCorpseClaimed
-import me.cookie.data.setCorpseExpired
+import me.cookie.data.*
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.citizensnpcs.api.persistence.Persist
@@ -44,6 +42,8 @@ class CorpseTrait: Trait("CorpseTrait") {
     @Persist("CorpseGraceTime") var gracePeriod: Long = 600000
     @Persist("LastClicked") var lastClicked: Long = System.currentTimeMillis()
     @Persist("CorpseId") var id = -1
+    @Persist("CorpseLocation") var corpseLocation: Location? = null
+    @Persist("FailedSpawn") var failedSpawn = false
 
     private val hitBoxes = mutableListOf<Entity>()
     /*private var isOpened = false*/
@@ -60,7 +60,6 @@ class CorpseTrait: Trait("CorpseTrait") {
 
     override fun onSpawn() {
         plugin.logger.info("CorpseTrait onSpawn called!")
-        /*
         if(spawnedBefore) {
             // Needs a bit more of a delay for the skin loading. Skins are uncached on server restart
             object: BukkitRunnable() {
@@ -71,24 +70,13 @@ class CorpseTrait: Trait("CorpseTrait") {
         }else{
             spawnedBefore = true
             spawnSleeping()
-        }
-         */
-        if (npc == null) {
-            plugin.logger.info("npc is null!")
-            return
-        }
-        if (npc.entity == null) {
-            plugin.logger.info("Entity is null!")
-            return
-        }
-
-        object: BukkitRunnable() {
-            override fun run() {
-                spawnSleeping()
+            if (npc == null || npc.entity == null) {
+                spawnFailed()
+                return
             }
-        }.runTaskLater(CitizensAPI.getPlugin(), 40)
+            setCorpseSpawnResult(ownerUUID, id, SpawnResult.SUCCESS)
+        }
         deserializedItemstacks = itemstacks.deseralizeItemStacks()
-        spawnedBefore = true
 
         // Destroy if there are more than limited corpses, also functions as a spawn limit :yay:
         val corpses = ownerUUID.cachedCorpses.toMutableList()
@@ -106,12 +94,38 @@ class CorpseTrait: Trait("CorpseTrait") {
     }
 
     fun spawnSleeping() {
+        if (npc == null) {
+            plugin.logger.info("npc is null!")
+            return
+        }
+        if (npc.entity == null) {
+            plugin.logger.info("Entity is null!")
+            return
+        }
         plugin.logger.info("Spawning sleeping player...")
         (npc.entity as Player).sleep(npc.storedLocation.clone(), true)
         PlayerAnimation.SLEEP.play(npc.entity as Player)
 
         npcTimers()
         spawnHitBoxes()
+    }
+    fun spawnFailed() {
+        if (corpseLocation == null) {
+            plugin.logger.info("Corpse location is null! cannot drop items!")
+        } else {
+            plugin.logger.info("Dropping items at ${corpseLocation.toString()}")
+            dropItems(corpseLocation!!)
+        }
+        failedSpawn = true
+        destroyCorpse()
+        Bukkit.getServer().scheduler.runTaskAsynchronously(RespawnHandler.instance, Runnable {
+            setCorpseSpawnResult(ownerUUID, id, SpawnResult.FAILED)
+        })
+    }
+    fun dropItems(location: Location) {
+        deserializedItemstacks.forEach {
+            location.world?.dropItemNaturally(location, it)
+        }
     }
 
     @EventHandler fun onClick(event: NPCRightClickEvent) {
@@ -297,6 +311,6 @@ class CorpseTrait: Trait("CorpseTrait") {
 
     fun destroyCorpse() {
         destroyHitBoxes()
-        npc.destroy()
+        npc?.destroy()
     }
 }

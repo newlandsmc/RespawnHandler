@@ -5,6 +5,7 @@ import me.cookie.RespawnHandler
 import me.cookie.cookiecore.deseralizeItemStacks
 import me.cookie.cookiecore.formatMinimessage
 import me.cookie.data.Corpse
+import me.cookie.data.SpawnResult
 import me.cookie.data.buildCorpseFromResult
 import me.cookie.data.getCorpsesConnection
 import me.cookie.util.TimeAgo
@@ -12,8 +13,6 @@ import org.bukkit.Location
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
-import org.bukkit.inventory.ItemStack
-import java.text.SimpleDateFormat
 import java.util.*
 
 class CorpsesCommand(private val plugin: RespawnHandler) : CommandExecutor {
@@ -27,6 +26,10 @@ class CorpsesCommand(private val plugin: RespawnHandler) : CommandExecutor {
         val subCommand = args[0].lowercase()
         when (subCommand) {
             "history" -> {
+                if (args.size < 2) {
+                    sendUsage(sender)
+                    return true
+                }
                 val player = args[1]
                 var page: Int;
                 if (args.size < 3) {
@@ -64,8 +67,18 @@ class CorpsesCommand(private val plugin: RespawnHandler) : CommandExecutor {
                         } else {
                             status = "<yellow>Unclaimed</yellow>"
                         }
+                        var spawnStatus: String
+                        if (corpse.spawnStatus == SpawnResult.UNKNOWN) {
+                            spawnStatus = "<yellow>Unknown</yellow>"
+                        } else if (corpse.spawnStatus == SpawnResult.SUCCESS) {
+                            spawnStatus = "<green>Success</green>"
+                        } else if (corpse.spawnStatus == SpawnResult.FAILED) {
+                            spawnStatus = "<red>Fail</red>"
+                        } else {
+                            spawnStatus = "<yellow>Unknown</yellow>"
+                        }
                         sender.sendMessage("<grey>${date} <red>- <white>${corpse.cause} <grey>(#${corpse.id})".formatMinimessage())
-                        sender.sendMessage("<grey>(x${corpse.x}/y${corpse.y}/z${corpse.z}/${corpse.world}) Items: ${corpse.items} Status: ${status}".formatMinimessage())
+                        sender.sendMessage("<grey>(x${corpse.x}/y${corpse.y}/z${corpse.z}/${corpse.world}) Items: ${corpse.items} Status: ${status} Entity Spawn Status: ${spawnStatus}".formatMinimessage())
                     }
                     sender.sendMessage("--------- <blue>Lookup Results</blue> ---------".formatMinimessage())
                     val s = "<grey>${corpses.size} results found. for page #${page}"
@@ -74,6 +87,11 @@ class CorpsesCommand(private val plugin: RespawnHandler) : CommandExecutor {
             }
 
             "spawn" -> {
+                if (args.size < 3) {
+                    sendUsage(sender)
+                    sender.sendMessage("<red>Did you forget to specify a player and a corpse id?".formatMinimessage())
+                    return true
+                }
                 val player = args[1]
                 val id = args[2].toInt()
                 sender.sendMessage("<green>Running database query...".formatMinimessage())
@@ -97,7 +115,7 @@ class CorpsesCommand(private val plugin: RespawnHandler) : CommandExecutor {
                     val items = results.getString("inventory").deseralizeItemStacks()
                     val corpseName: String = offlinePlayer.name.toString();
                     runSync {
-                        val corpseE = CorpseEntity(corpseName, offlinePlayer.uniqueId, 0, items, corpse)
+                        val corpseE = CorpseEntity(corpseName, offlinePlayer.uniqueId, 0, items, corpse, location)
                         corpseE.spawnCorpse(location)
                         sender.sendMessage("<green>Spawned the corpse at ${corpse.x}, ${corpse.y}, ${corpse.z}".formatMinimessage())
                     }

@@ -25,8 +25,9 @@ class CorpseEntity(
     private val playerUUID: UUID,
     private val playerSouls: Int,
     private val items: List<ItemStack>,
-    private val corpse: Corpse
-    ) {
+    private val corpse: Corpse,
+    private val location: Location
+) {
 
     private val npc: NPC
     private val inventory: Inventory
@@ -41,7 +42,7 @@ class CorpseEntity(
     private fun createNPC(): NPC {
         return CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, "").apply {
             getOrAddTrait(SkinTrait::class.java).skinName = playerName
-            getOrAddTrait(CorpseTrait::class.java).apply {
+            val corpseTrait: CorpseTrait = getOrAddTrait(CorpseTrait::class.java).apply {
                 ownerName = playerName
                 ownerUUID = playerUUID
                 itemstacks = items.serialize()
@@ -53,6 +54,11 @@ class CorpseEntity(
                 corpseLockedMessage = CORPSE_LOCKED_MESSAGE
                 souls = playerSouls
                 id = corpse.id
+                corpseLocation = location
+            }
+            if (corpseTrait.failedSpawn) {
+                Bukkit.getLogger().warning("Failed to spawn corpse for $playerName")
+                return@apply
             }
 
             getOrAddTrait(HologramTrait::class.java).apply {

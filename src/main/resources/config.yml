@@ -12,6 +12,7 @@ corpse-grace-message: "(corpseName)'s corpse is currently locked! It will be unl
 corpse-pickupsouls-message: "<green>Found (corpseSouls) souls on (corpseName)'s corpse."
 corpse-nosouls-message: "<red>No souls were found on this corpse."
 corpse-name: "<red>(corpseName)'s corpse" # name in gui
+corpse-drop-items-on-spawn-fail: true
 
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=  Damage  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 damage-debuff-duration: 5 # in minutes

@@ -95,7 +95,7 @@ class PlayerDeath(private val plugin: RespawnHandler) : Listener {
             location.world.name, message, base64Data, System.currentTimeMillis(), false, items.size,false, ""
         )
         saveCorpse(corpseData)
-        val corpse = CorpseEntity(player.name, player.uniqueId, player.souls, items, corpseData) //CorpseEntity(player, items, corpseData)
+        val corpse = CorpseEntity(player.name, player.uniqueId, player.souls, items, corpseData, location) //CorpseEntity(player, items, corpseData)
         corpse.spawnCorpse(player.location)
     }
 

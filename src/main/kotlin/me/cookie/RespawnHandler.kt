@@ -50,7 +50,8 @@ class RespawnHandler : JavaPlugin() {
                     "claimed boolean",
                     "items int",
                     "expired boolean",
-                    "claimedByUUID varchar(255)"
+                    "claimedByUUID varchar(255)",
+                    "spawnStatus varchar(255)"
                 )
             )
         }
