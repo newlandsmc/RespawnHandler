@@ -45,7 +45,7 @@ class RespawnHandler : JavaPlugin() {
                     "z int",
                     "world varchar(255)",
                     "cause varchar(255)",
-                    "inventory varchar(MAX)",
+                    "inventory LONGTEXT",
                     "timestamp bigint",
                     "claimed boolean",
                     "items int",
