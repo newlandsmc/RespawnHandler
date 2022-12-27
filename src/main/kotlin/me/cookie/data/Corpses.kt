@@ -14,8 +14,8 @@ class Corpses(plugin: RespawnHandler) {
 
 private lateinit var pluginInstance: RespawnHandler
 fun saveCorpse(corpse: Corpse) {
-    val cause: String = escapeStringForSql(corpse.cause)
-    val inventory: String = escapeStringForSql(corpse.inventoryBase64)
+    val cause: String = corpse.cause.escapeStringForSql()
+    val inventory: String = corpse.inventoryBase64.escapeStringForSql()
 
     pluginInstance.corpses.insertIntoTable(
         "corpses",
@@ -47,11 +47,11 @@ fun saveCorpse(corpse: Corpse) {
     //)
 }
 
-fun escapeStringForSql(input: String): String {
-    return input.replace("'", "''")
+fun String.escapeStringForSql(): String {
+    return this.replace("'", "''")
 }
-fun unescapeStringForSql(input: String): String {
-    return input.replace("''", "'")
+fun String.unescapeStringForSql(): String {
+    return this.replace("''", "'")
 }
 
 fun getNextCorpseId(uuid: UUID): Int {
@@ -108,8 +108,8 @@ fun buildCorpseFromResult(result: ResultSet): Corpse {
         result.getInt("x"), result.getInt("y"),
         result.getInt("z"), result.getString("world"),
         //result.getString("cause"), result.getString("inventory"),
-        unescapeStringForSql(result.getString("cause")),
-        unescapeStringForSql(result.getString("inventory")),
+        result.getString("cause").unescapeStringForSql(),
+        result.getString("inventory").unescapeStringForSql(),
         result.getLong("timestamp"), result.getBoolean("claimed"),
         result.getInt("items"),
         result.getBoolean("expired"),
